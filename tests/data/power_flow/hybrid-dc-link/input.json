@@ -1,0 +1,32 @@
+{
+  "version": "1.0",
+  "type": "input",
+  "is_batch": false,
+  "attributes": {},
+  "data": {
+    "node": [
+      {"id": 1, "u_rated": 10500},
+      {"id": 2, "u_rated": 10500}
+    ],
+    "line": [
+      {"id": 100, "from_node": 1, "to_node": 2, "from_status": 1, "to_status": 1, "r1": 0.5, "x1": 1, "c1": 0, "tan1": 0, "r0": 1, "x0": 2, "c0": 0, "tan0": 0}
+    ],
+    "source": [
+      {"id": 200, "node": 1, "status": 1, "u_ref": 1}
+    ],
+    "sym_load": [
+      {"id": 300, "node": 2, "status": 1, "type": 0, "p_specified": 1000000, "q_specified": 200000}
+    ],
+    "dc_node": [
+      {"id": 10, "u_rated": 20000},
+      {"id": 11, "u_rated": 20000}
+    ],
+    "dc_line": [
+      {"id": 400, "from_node": 10, "to_node": 11, "from_status": 1, "to_status": 1, "r1": 2}
+    ],
+    "vsc": [
+      {"id": 500, "from_node": 1, "to_node": 10, "from_status": 1, "to_status": 1, "control_p": 1, "q_set": 500000, "u_dc_set": 20000, "loss_a": 5000, "loss_b": 0.02, "loss_c": 1},
+      {"id": 501, "from_node": 2, "to_node": 11, "from_status": 1, "to_status": 1, "control_p": 0, "p_set": -2000000, "q_set": 0, "loss_a": 5000, "loss_b": 0.02, "loss_c": 1}
+    ]
+  }
+}

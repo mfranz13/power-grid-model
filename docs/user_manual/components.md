@@ -1368,6 +1368,11 @@ $$
 In this case, `limit_violated` will indicate which limit was exceeded, and the actual voltage at the node may differ
 from `u_ref`.
 
+## Hybrid AC/DC components (fork extension)
+
+This fork adds `dc_node`, `dc_line` and `vsc` for the unified hybrid AC/DC power flow.
+See [Hybrid AC/DC power flow](./hybrid-acdc.md).
+
 ## Other components
 
 The list of components explicitly supported by the power-grid-model is a subset of all possible power system components.

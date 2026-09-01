@@ -299,6 +299,11 @@ By default, the [Newton-Raphson](../algorithms/pf-algorithms.md#newton-raphson-p
 ```
 
 ```{note}
+Fork extension: grids with DC components (`dc_node`/`dc_line`/`vsc`) are calculated with
+`CalculationMethod.hybrid_newton_raphson`; see [Hybrid AC/DC power flow](./hybrid-acdc.md).
+```
+
+```{note}
 When all the load/generation types are of constant impedance, the [Linear](../algorithms/pf-algorithms.md#linear-power-flow) method will be the
 fastest without loss of accuracy.
 Therefore power-grid-model will use this method regardless of the input provided by the user in this case.

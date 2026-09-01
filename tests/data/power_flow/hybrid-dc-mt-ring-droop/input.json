@@ -1,0 +1,43 @@
+{
+  "version": "1.0",
+  "type": "input",
+  "is_batch": false,
+  "attributes": {},
+  "data": {
+    "node": [
+      {"id": 1, "u_rated": 10500},
+      {"id": 2, "u_rated": 10500},
+      {"id": 3, "u_rated": 10500}
+    ],
+    "line": [
+      {"id": 100, "from_node": 1, "to_node": 2, "from_status": 1, "to_status": 1, "r1": 0.5, "x1": 1, "c1": 0, "tan1": 0, "r0": 1, "x0": 2, "c0": 0, "tan0": 0},
+      {"id": 101, "from_node": 2, "to_node": 3, "from_status": 1, "to_status": 1, "r1": 0.5, "x1": 1, "c1": 0, "tan1": 0, "r0": 1, "x0": 2, "c0": 0, "tan0": 0}
+    ],
+    "source": [
+      {"id": 200, "node": 1, "status": 1, "u_ref": 1}
+    ],
+    "sym_load": [
+      {"id": 300, "node": 2, "status": 1, "type": 0, "p_specified": 1000000, "q_specified": 200000},
+      {"id": 301, "node": 3, "status": 1, "type": 0, "p_specified": 500000, "q_specified": 100000}
+    ],
+    "dc_node": [
+      {"id": 10, "u_rated": 20000},
+      {"id": 11, "u_rated": 20000},
+      {"id": 12, "u_rated": 20000},
+      {"id": 13, "u_rated": 20000}
+    ],
+    "dc_line": [
+      {"id": 400, "from_node": 10, "to_node": 11, "from_status": 1, "to_status": 1, "r1": 2},
+      {"id": 401, "from_node": 11, "to_node": 12, "from_status": 1, "to_status": 1, "r1": 3},
+      {"id": 402, "from_node": 12, "to_node": 13, "from_status": 1, "to_status": 1, "r1": 2},
+      {"id": 403, "from_node": 13, "to_node": 10, "from_status": 1, "to_status": 1, "r1": 3},
+      {"id": 404, "from_node": 10, "to_node": 12, "from_status": 1, "to_status": 1, "r1": 4}
+    ],
+    "vsc": [
+      {"id": 500, "from_node": 1, "to_node": 10, "from_status": 1, "to_status": 1, "control_p": 2, "q_set": 300000, "droop_p_set": 500000, "droop_gain": 500, "droop_u_ref": 20200, "loss_a": 5000, "loss_b": 0.02, "loss_c": 1},
+      {"id": 501, "from_node": 2, "to_node": 11, "from_status": 1, "to_status": 1, "control_p": 0, "p_set": -1200000, "q_set": 0, "loss_a": 5000, "loss_b": 0.02, "loss_c": 1},
+      {"id": 502, "from_node": 2, "to_node": 11, "from_status": 1, "to_status": 1, "control_p": 0, "p_set": 300000, "q_set": -100000, "loss_a": 5000, "loss_b": 0.02, "loss_c": 1},
+      {"id": 503, "from_node": 3, "to_node": 12, "from_status": 1, "to_status": 1, "control_p": 1, "q_set": 200000, "u_dc_set": 20000, "loss_a": 5000, "loss_b": 0.02, "loss_c": 1}
+    ]
+  }
+}
