@@ -266,9 +266,6 @@ template <symmetry_tag sym_type> class HybridNRPFSolver {
                     "DC subnetwork of math bus {} has no u_dc- or droop-controlling converter", i)};
             }
         }
-        if (std::ranges::any_of(vsc_, [](VscState const& v) { return v.param.control_p == VscControlMode::droop; })) {
-            throw NotImplementedError{}; // droop control follows in a later milestone
-        }
     }
 
     void set_converter_start_values(YBus<sym> const& y_bus) {
@@ -294,21 +291,37 @@ template <symmetry_tag sym_type> class HybridNRPFSolver {
         }
         std::vector<double> fixed_p_t_sum(n_bus_, 0.0);
         IdxVector n_free(n_bus_, 0);
+        auto const droop_start_p_t = [](VscCalcParam const& param) {
+            return param.droop_p_set + param.droop_gain * (param.droop_u_ref - 1.0); // flat start U_dc = 1
+        };
         for (auto const& vsc : vsc_) {
-            if (vsc.param.control_p == VscControlMode::p) {
+            switch (vsc.param.control_p) {
+            case VscControlMode::p:
                 fixed_p_t_sum[find(vsc.d)] += vsc.param.p_set;
-            } else {
+                break;
+            case VscControlMode::droop:
+                fixed_p_t_sum[find(vsc.d)] += droop_start_p_t(vsc.param);
+                break;
+            default:
                 ++n_free[find(vsc.d)];
+                break;
             }
         }
         for (auto& vsc : vsc_) {
-            if (vsc.param.control_p == VscControlMode::p) {
+            switch (vsc.param.control_p) {
+            case VscControlMode::p:
                 vsc.p_t = vsc.param.p_set;
-            } else {
+                break;
+            case VscControlMode::droop:
+                vsc.p_t = droop_start_p_t(vsc.param);
+                break;
+            default: {
                 Idx const root = find(vsc.d);
                 double const estimate = -fixed_p_t_sum[root] / static_cast<double>(std::max(n_free[root], Idx{1}));
                 // keep the start away from the singular sqrt point of the b loss term
                 vsc.p_t = std::abs(estimate) > 1e-3 ? estimate : 1e-3;
+                break;
+            }
             }
             vsc.p_f = converter_loss(vsc, 1.0) - vsc.p_t;
         }
@@ -473,6 +486,11 @@ template <symmetry_tag sym_type> class HybridNRPFSolver {
         if constexpr (is_symmetric_v<sym>) {
             for (auto& vsc : vsc_) {
                 double const v_a = x_[vsc.a].v();
+                double const v_d = x_[vsc.d].v();
+                if (vsc.param.control_p == VscControlMode::droop) {
+                    // eliminated droop equation: P_t is a linear function of U_dc
+                    vsc.p_t = vsc.param.droop_p_set + vsc.param.droop_gain * (vsc.param.droop_u_ref - v_d);
+                }
                 double const p_t = vsc.p_t;
                 double const q_t = vsc.param.q_set;
                 double const s = std::hypot(p_t, q_t);
@@ -502,6 +520,14 @@ template <symmetry_tag sym_type> class HybridNRPFSolver {
                     data_jac_[vsc.lu_ad].n() += 1.0;
                     // J.N(d,d) -= dP_sp_d/dP_t = -(d(loss)/dP_t - 1)
                     data_jac_[bus_entry[vsc.d]].n() += d_loss_dpt - 1.0;
+                } else if (vsc.param.control_p == VscControlMode::droop && pinning_vsc_of_bus_[vsc.d] == -1) {
+                    // dP_t/dU_dc = -gain; if the bus is pinned by a u_dc converter, U_dc is fixed
+                    // and P_t is effectively constant, so no column entries are written there
+                    double const dpt_dud = -vsc.param.droop_gain;
+                    // J.N(a,d) -= dP_sp_a/dV_d * V_d = -dP_t/dU_dc * V_d
+                    data_jac_[vsc.lu_ad].n() += dpt_dud * v_d;
+                    // J.N(d,d) -= dP_sp_d/dV_d * V_d = +(d(loss)/dP_t - 1) * dP_t/dU_dc * V_d
+                    data_jac_[bus_entry[vsc.d]].n() += (d_loss_dpt - 1.0) * dpt_dud * v_d;
                 }
             }
         }
@@ -539,9 +565,13 @@ template <symmetry_tag sym_type> class HybridNRPFSolver {
 
     void finalize_converter_output(SolverOutput<sym>& output) {
         if constexpr (is_symmetric_v<sym>) {
-            for (auto const& vsc : vsc_) {
+            for (auto& vsc : vsc_) {
                 double const v_a = x_[vsc.a].v();
                 double const v_d = x_[vsc.d].v();
+                if (vsc.param.control_p == VscControlMode::droop) {
+                    // refresh with the final DC voltage (the last iterate moved U_dc once more)
+                    vsc.p_t = vsc.param.droop_p_set + vsc.param.droop_gain * (vsc.param.droop_u_ref - v_d);
+                }
                 double const p_f = converter_loss(vsc, v_a) - vsc.p_t;
                 auto& branch = output.branch[vsc.branch];
                 DoubleComplex const s_f{vsc.p_t, vsc.param.q_set};
