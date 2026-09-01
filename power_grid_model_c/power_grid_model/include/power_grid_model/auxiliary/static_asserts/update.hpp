@@ -41,6 +41,21 @@ static_assert(std::alignment_of_v<ApplianceUpdate> >= std::alignment_of_v<BaseUp
 static_assert(std::same_as<decltype(ApplianceUpdate::id), decltype(BaseUpdate::id)>);
 static_assert(offsetof(ApplianceUpdate, id) == offsetof(BaseUpdate, id));
 
+// static asserts for VscUpdate
+static_assert(std::is_standard_layout_v<VscUpdate>);
+// static asserts for conversion of VscUpdate to BaseUpdate
+static_assert(std::alignment_of_v<VscUpdate> >= std::alignment_of_v<BranchUpdate>);
+static_assert(std::same_as<decltype(VscUpdate::id), decltype(BaseUpdate::id)>);
+static_assert(offsetof(VscUpdate, id) == offsetof(BaseUpdate, id));
+// static asserts for conversion of VscUpdate to BranchUpdate
+static_assert(std::alignment_of_v<VscUpdate> >= std::alignment_of_v<BranchUpdate>);
+static_assert(std::same_as<decltype(VscUpdate::id), decltype(BranchUpdate::id)>);
+static_assert(std::same_as<decltype(VscUpdate::from_status), decltype(BranchUpdate::from_status)>);
+static_assert(std::same_as<decltype(VscUpdate::to_status), decltype(BranchUpdate::to_status)>);
+static_assert(offsetof(VscUpdate, id) == offsetof(BranchUpdate, id));
+static_assert(offsetof(VscUpdate, from_status) == offsetof(BranchUpdate, from_status));
+static_assert(offsetof(VscUpdate, to_status) == offsetof(BranchUpdate, to_status));
+
 // static asserts for TransformerUpdate
 static_assert(std::is_standard_layout_v<TransformerUpdate>);
 // static asserts for conversion of TransformerUpdate to BaseUpdate

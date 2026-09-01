@@ -47,6 +47,30 @@ struct ApplianceUpdate {
     operator BaseUpdate const&() const { return reinterpret_cast<BaseUpdate const&>(*this); }
 };
 
+struct VscUpdate {
+    ID id{na_IntID};  // ID of the object
+    IntS from_status{na_IntS};  // whether the branch is connected at each side
+    IntS to_status{na_IntS};  // whether the branch is connected at each side
+    VscControlMode control_p{static_cast<VscControlMode>(na_IntS)};  // active power control mode
+    double p_set{nan};  // power setpoints at the AC side, from-side branch convention
+    double q_set{nan};  // power setpoints at the AC side, from-side branch convention
+    double u_dc_set{nan};  // DC voltage setpoint for u_dc control mode
+    double droop_p_set{nan};  // droop control parameters
+    double droop_gain{nan};  // droop control parameters
+    double droop_u_ref{nan};  // droop control parameters
+    double loss_a{nan};  // IEC 62751-2 loss polynomial coefficients
+    double loss_b{nan};  // IEC 62751-2 loss polynomial coefficients
+    double loss_c{nan};  // IEC 62751-2 loss polynomial coefficients
+
+    // implicit conversions to BaseUpdate
+    operator BaseUpdate&() { return reinterpret_cast<BaseUpdate&>(*this); }
+    operator BaseUpdate const&() const { return reinterpret_cast<BaseUpdate const&>(*this); }
+
+    // implicit conversions to BranchUpdate
+    operator BranchUpdate&() { return reinterpret_cast<BranchUpdate&>(*this); }
+    operator BranchUpdate const&() const { return reinterpret_cast<BranchUpdate const&>(*this); }
+};
+
 struct TransformerUpdate {
     ID id{na_IntID};  // ID of the object
     IntS from_status{na_IntS};  // whether the branch is connected at each side

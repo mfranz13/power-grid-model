@@ -180,6 +180,64 @@ struct LinkInput {
     operator BranchInput const&() const { return reinterpret_cast<BranchInput const&>(*this); }
 };
 
+struct DcNodeInput {
+    ID id{na_IntID};  // ID of the object
+    double u_rated{nan};  // rated line-line voltage
+
+    // implicit conversions to BaseInput
+    operator BaseInput&() { return reinterpret_cast<BaseInput&>(*this); }
+    operator BaseInput const&() const { return reinterpret_cast<BaseInput const&>(*this); }
+
+    // implicit conversions to NodeInput
+    operator NodeInput&() { return reinterpret_cast<NodeInput&>(*this); }
+    operator NodeInput const&() const { return reinterpret_cast<NodeInput const&>(*this); }
+};
+
+struct DcLineInput {
+    ID id{na_IntID};  // ID of the object
+    ID from_node{na_IntID};  // node IDs to which this branch is connected at both sides
+    ID to_node{na_IntID};  // node IDs to which this branch is connected at both sides
+    IntS from_status{na_IntS};  // whether the branch is connected at each side
+    IntS to_status{na_IntS};  // whether the branch is connected at each side
+    double r1{nan};  // series resistance
+    double i_n{nan};  // rated current
+
+    // implicit conversions to BaseInput
+    operator BaseInput&() { return reinterpret_cast<BaseInput&>(*this); }
+    operator BaseInput const&() const { return reinterpret_cast<BaseInput const&>(*this); }
+
+    // implicit conversions to BranchInput
+    operator BranchInput&() { return reinterpret_cast<BranchInput&>(*this); }
+    operator BranchInput const&() const { return reinterpret_cast<BranchInput const&>(*this); }
+};
+
+struct VscInput {
+    ID id{na_IntID};  // ID of the object
+    ID from_node{na_IntID};  // node IDs to which this branch is connected at both sides
+    ID to_node{na_IntID};  // node IDs to which this branch is connected at both sides
+    IntS from_status{na_IntS};  // whether the branch is connected at each side
+    IntS to_status{na_IntS};  // whether the branch is connected at each side
+    VscControlMode control_p{static_cast<VscControlMode>(na_IntS)};  // active power control mode
+    double p_set{nan};  // power setpoints at the AC side, from-side branch convention
+    double q_set{nan};  // power setpoints at the AC side, from-side branch convention
+    double u_dc_set{nan};  // DC voltage setpoint for u_dc control mode
+    double droop_p_set{nan};  // droop control parameters
+    double droop_gain{nan};  // droop control parameters
+    double droop_u_ref{nan};  // droop control parameters
+    double loss_a{nan};  // IEC 62751-2 loss polynomial coefficients
+    double loss_b{nan};  // IEC 62751-2 loss polynomial coefficients
+    double loss_c{nan};  // IEC 62751-2 loss polynomial coefficients
+    double sn{nan};  // rated power
+
+    // implicit conversions to BaseInput
+    operator BaseInput&() { return reinterpret_cast<BaseInput&>(*this); }
+    operator BaseInput const&() const { return reinterpret_cast<BaseInput const&>(*this); }
+
+    // implicit conversions to BranchInput
+    operator BranchInput&() { return reinterpret_cast<BranchInput&>(*this); }
+    operator BranchInput const&() const { return reinterpret_cast<BranchInput const&>(*this); }
+};
+
 struct TransformerInput {
     ID id{na_IntID};  // ID of the object
     ID from_node{na_IntID};  // node IDs to which this branch is connected at both sides

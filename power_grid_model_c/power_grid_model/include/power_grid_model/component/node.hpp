@@ -16,7 +16,7 @@
 
 namespace power_grid_model {
 
-class Node final : public Base {
+class Node : public Base {
   public:
     using InputType = NodeInput;
     template <symmetry_tag sym> using OutputType = NodeOutput<sym>;

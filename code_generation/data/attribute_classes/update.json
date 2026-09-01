@@ -46,6 +46,37 @@
       ]
     },
     {
+      "name": "VscUpdate",
+      "base": "BranchUpdate",
+      "attributes": [
+        {
+          "data_type": "VscControlMode",
+          "names": "control_p",
+          "description": "active power control mode"
+        },
+        {
+          "data_type": "double",
+          "names": ["p_set", "q_set"],
+          "description": "power setpoints at the AC side, from-side branch convention"
+        },
+        {
+          "data_type": "double",
+          "names": "u_dc_set",
+          "description": "DC voltage setpoint for u_dc control mode"
+        },
+        {
+          "data_type": "double",
+          "names": ["droop_p_set", "droop_gain", "droop_u_ref"],
+          "description": "droop control parameters"
+        },
+        {
+          "data_type": "double",
+          "names": ["loss_a", "loss_b", "loss_c"],
+          "description": "IEC 62751-2 loss polynomial coefficients"
+        }
+      ]
+    },
+    {
       "name": "TransformerUpdate",
       "base": "BranchUpdate",
       "attributes": [

@@ -50,7 +50,7 @@ inline auto get_topo_node(MainModelState<ComponentContainer> const& state, Idx t
     return nodes[control_side_idx];
 }
 
-template <std::same_as<Node> ComponentType, class ComponentContainer>
+template <std::derived_from<Node> ComponentType, class ComponentContainer>
     requires model_component_state_c<MainModelState, ComponentContainer, ComponentType>
 constexpr auto get_math_id(MainModelState<ComponentContainer> const& state, Idx topology_sequence_idx) {
     return state.topo_comp_coup->node[topology_sequence_idx];
@@ -86,10 +86,11 @@ constexpr auto get_math_id(MainModelState<ComponentContainer> const& state, Idx 
     return state.topo_comp_coup->regulator[topology_sequence_idx];
 }
 
-template <std::same_as<Node> Component, class ComponentContainer>
+template <std::derived_from<Node> Component, class ComponentContainer>
     requires model_component_state_c<MainModelState, ComponentContainer, Component>
 constexpr auto comp_base_sequence_cbegin(MainModelState<ComponentContainer> const& state) {
-    return state.reduced_topology->topo_node_coup.coupling.user_nodes_to_topo_nodes.cbegin();
+    return state.reduced_topology->topo_node_coup.coupling.user_nodes_to_topo_nodes.cbegin() +
+           get_component_sequence_offset<Node, Component>(state.components);
 }
 
 template <std::derived_from<Edge> Component, class ComponentContainer>

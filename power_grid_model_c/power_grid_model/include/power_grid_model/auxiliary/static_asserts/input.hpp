@@ -131,6 +131,57 @@ static_assert(offsetof(LinkInput, to_node) == offsetof(BranchInput, to_node));
 static_assert(offsetof(LinkInput, from_status) == offsetof(BranchInput, from_status));
 static_assert(offsetof(LinkInput, to_status) == offsetof(BranchInput, to_status));
 
+// static asserts for DcNodeInput
+static_assert(std::is_standard_layout_v<DcNodeInput>);
+// static asserts for conversion of DcNodeInput to BaseInput
+static_assert(std::alignment_of_v<DcNodeInput> >= std::alignment_of_v<NodeInput>);
+static_assert(std::same_as<decltype(DcNodeInput::id), decltype(BaseInput::id)>);
+static_assert(offsetof(DcNodeInput, id) == offsetof(BaseInput, id));
+// static asserts for conversion of DcNodeInput to NodeInput
+static_assert(std::alignment_of_v<DcNodeInput> >= std::alignment_of_v<NodeInput>);
+static_assert(std::same_as<decltype(DcNodeInput::id), decltype(NodeInput::id)>);
+static_assert(std::same_as<decltype(DcNodeInput::u_rated), decltype(NodeInput::u_rated)>);
+static_assert(offsetof(DcNodeInput, id) == offsetof(NodeInput, id));
+static_assert(offsetof(DcNodeInput, u_rated) == offsetof(NodeInput, u_rated));
+
+// static asserts for DcLineInput
+static_assert(std::is_standard_layout_v<DcLineInput>);
+// static asserts for conversion of DcLineInput to BaseInput
+static_assert(std::alignment_of_v<DcLineInput> >= std::alignment_of_v<BranchInput>);
+static_assert(std::same_as<decltype(DcLineInput::id), decltype(BaseInput::id)>);
+static_assert(offsetof(DcLineInput, id) == offsetof(BaseInput, id));
+// static asserts for conversion of DcLineInput to BranchInput
+static_assert(std::alignment_of_v<DcLineInput> >= std::alignment_of_v<BranchInput>);
+static_assert(std::same_as<decltype(DcLineInput::id), decltype(BranchInput::id)>);
+static_assert(std::same_as<decltype(DcLineInput::from_node), decltype(BranchInput::from_node)>);
+static_assert(std::same_as<decltype(DcLineInput::to_node), decltype(BranchInput::to_node)>);
+static_assert(std::same_as<decltype(DcLineInput::from_status), decltype(BranchInput::from_status)>);
+static_assert(std::same_as<decltype(DcLineInput::to_status), decltype(BranchInput::to_status)>);
+static_assert(offsetof(DcLineInput, id) == offsetof(BranchInput, id));
+static_assert(offsetof(DcLineInput, from_node) == offsetof(BranchInput, from_node));
+static_assert(offsetof(DcLineInput, to_node) == offsetof(BranchInput, to_node));
+static_assert(offsetof(DcLineInput, from_status) == offsetof(BranchInput, from_status));
+static_assert(offsetof(DcLineInput, to_status) == offsetof(BranchInput, to_status));
+
+// static asserts for VscInput
+static_assert(std::is_standard_layout_v<VscInput>);
+// static asserts for conversion of VscInput to BaseInput
+static_assert(std::alignment_of_v<VscInput> >= std::alignment_of_v<BranchInput>);
+static_assert(std::same_as<decltype(VscInput::id), decltype(BaseInput::id)>);
+static_assert(offsetof(VscInput, id) == offsetof(BaseInput, id));
+// static asserts for conversion of VscInput to BranchInput
+static_assert(std::alignment_of_v<VscInput> >= std::alignment_of_v<BranchInput>);
+static_assert(std::same_as<decltype(VscInput::id), decltype(BranchInput::id)>);
+static_assert(std::same_as<decltype(VscInput::from_node), decltype(BranchInput::from_node)>);
+static_assert(std::same_as<decltype(VscInput::to_node), decltype(BranchInput::to_node)>);
+static_assert(std::same_as<decltype(VscInput::from_status), decltype(BranchInput::from_status)>);
+static_assert(std::same_as<decltype(VscInput::to_status), decltype(BranchInput::to_status)>);
+static_assert(offsetof(VscInput, id) == offsetof(BranchInput, id));
+static_assert(offsetof(VscInput, from_node) == offsetof(BranchInput, from_node));
+static_assert(offsetof(VscInput, to_node) == offsetof(BranchInput, to_node));
+static_assert(offsetof(VscInput, from_status) == offsetof(BranchInput, from_status));
+static_assert(offsetof(VscInput, to_status) == offsetof(BranchInput, to_status));
+
 // static asserts for TransformerInput
 static_assert(std::is_standard_layout_v<TransformerInput>);
 // static asserts for conversion of TransformerInput to BaseInput

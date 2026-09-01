@@ -45,13 +45,18 @@ template <symmetry_tag sym> class MathSolver : public MathSolverBase<sym> {
         using enum CalculationMethod;
 
         // set method to always linear if all load_gens have const_y
-        calculation_method = all_const_y_ ? linear : calculation_method;
+        // fork extension: never override the hybrid AC/DC method
+        if (calculation_method != hybrid_newton_raphson) {
+            calculation_method = all_const_y_ ? linear : calculation_method;
+        }
 
         switch (calculation_method) {
         case default_method:
             [[fallthrough]]; // use Newton-Raphson by default
         case newton_raphson:
             return run_power_flow_newton_raphson(input, err_tol, max_iter, cache_run, log, y_bus);
+        case hybrid_newton_raphson:
+            throw NotImplementedError{};
         case linear:
             return run_power_flow_linear(input, err_tol, max_iter, log, y_bus);
         case linear_current:

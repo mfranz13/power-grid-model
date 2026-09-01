@@ -15,6 +15,8 @@
 #include "../component/branch.hpp"
 #include "../component/branch3.hpp"
 #include "../component/current_sensor.hpp"
+#include "../component/dc_line.hpp"
+#include "../component/dc_node.hpp"
 #include "../component/edge.hpp"
 #include "../component/fault.hpp"
 #include "../component/line.hpp"
@@ -29,6 +31,7 @@
 #include "../component/transformer_tap_regulator.hpp"
 #include "../component/voltage_regulator.hpp"
 #include "../component/voltage_sensor.hpp"
+#include "../component/vsc.hpp"
 #include "../container_fwd.hpp"
 
 #include <array>
@@ -66,6 +69,29 @@ inline void add_component(ComponentContainer& components, Inputs component_input
         // construct based on type of component
         if constexpr (std::derived_from<Component, Node>) {
             emplace_component<Component>(components, id, input);
+        } else if constexpr (std::same_as<Component, DcLine>) {
+            // both endpoints must be dc_nodes
+            for (ID const node : {input.from_node, input.to_node}) {
+                if (get_component_idx_by_id(components, node).group != get_component_type_index<DcNode>(components)) {
+                    throw IDWrongType{node};
+                }
+            }
+            double const u1 = get_component<Node>(components, input.from_node).u_rated();
+            double const u2 = get_component<Node>(components, input.to_node).u_rated();
+            emplace_component<Component>(components, id, input, u1, u2);
+        } else if constexpr (std::same_as<Component, Vsc>) {
+            // from-side must be an AC node, to-side must be a dc_node
+            if (get_component_idx_by_id(components, input.from_node).group !=
+                get_component_type_index<Node>(components)) {
+                throw IDWrongType{input.from_node};
+            }
+            if (get_component_idx_by_id(components, input.to_node).group !=
+                get_component_type_index<DcNode>(components)) {
+                throw IDWrongType{input.to_node};
+            }
+            double const u1 = get_component<Node>(components, input.from_node).u_rated();
+            double const u2 = get_component<Node>(components, input.to_node).u_rated();
+            emplace_component<Component>(components, id, input, u1, u2);
         } else if constexpr (std::derived_from<Component, Branch>) {
             double const u1 = get_component<Node>(components, input.from_node).u_rated();
             double const u2 = get_component<Node>(components, input.to_node).u_rated();

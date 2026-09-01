@@ -38,6 +38,15 @@ enum class CalculationMethod : IntS {
     iterative_current = 3,
     linear_current = 4,
     iec60909 = 5,
+    // fork extension: unified hybrid AC/DC Newton-Raphson; high value to dodge upstream collisions
+    hybrid_newton_raphson = 101,
+};
+
+// fork extension: active power control mode of a VSC converter
+enum class VscControlMode : IntS {
+    p = 0,     // fixed P_t setpoint at the AC side
+    u_dc = 1,  // fixed DC voltage at the dc_node
+    droop = 2, // P-U_dc droop
 };
 
 enum class MeasuredTerminalType : IntS {

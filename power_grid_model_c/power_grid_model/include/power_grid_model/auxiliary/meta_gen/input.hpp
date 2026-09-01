@@ -188,6 +188,55 @@ struct get_attributes_list<LinkInput> {
 };
 
 template<>
+struct get_attributes_list<DcNodeInput> {
+    static constexpr std::array<MetaAttribute, 2> value{
+            // all attributes including base class
+            
+            meta_data_gen::get_meta_attribute<&DcNodeInput::id>(offsetof(DcNodeInput, id), "id"),
+            meta_data_gen::get_meta_attribute<&DcNodeInput::u_rated>(offsetof(DcNodeInput, u_rated), "u_rated"),
+    };
+};
+
+template<>
+struct get_attributes_list<DcLineInput> {
+    static constexpr std::array<MetaAttribute, 7> value{
+            // all attributes including base class
+            
+            meta_data_gen::get_meta_attribute<&DcLineInput::id>(offsetof(DcLineInput, id), "id"),
+            meta_data_gen::get_meta_attribute<&DcLineInput::from_node>(offsetof(DcLineInput, from_node), "from_node"),
+            meta_data_gen::get_meta_attribute<&DcLineInput::to_node>(offsetof(DcLineInput, to_node), "to_node"),
+            meta_data_gen::get_meta_attribute<&DcLineInput::from_status>(offsetof(DcLineInput, from_status), "from_status"),
+            meta_data_gen::get_meta_attribute<&DcLineInput::to_status>(offsetof(DcLineInput, to_status), "to_status"),
+            meta_data_gen::get_meta_attribute<&DcLineInput::r1>(offsetof(DcLineInput, r1), "r1"),
+            meta_data_gen::get_meta_attribute<&DcLineInput::i_n>(offsetof(DcLineInput, i_n), "i_n"),
+    };
+};
+
+template<>
+struct get_attributes_list<VscInput> {
+    static constexpr std::array<MetaAttribute, 16> value{
+            // all attributes including base class
+            
+            meta_data_gen::get_meta_attribute<&VscInput::id>(offsetof(VscInput, id), "id"),
+            meta_data_gen::get_meta_attribute<&VscInput::from_node>(offsetof(VscInput, from_node), "from_node"),
+            meta_data_gen::get_meta_attribute<&VscInput::to_node>(offsetof(VscInput, to_node), "to_node"),
+            meta_data_gen::get_meta_attribute<&VscInput::from_status>(offsetof(VscInput, from_status), "from_status"),
+            meta_data_gen::get_meta_attribute<&VscInput::to_status>(offsetof(VscInput, to_status), "to_status"),
+            meta_data_gen::get_meta_attribute<&VscInput::control_p>(offsetof(VscInput, control_p), "control_p"),
+            meta_data_gen::get_meta_attribute<&VscInput::p_set>(offsetof(VscInput, p_set), "p_set"),
+            meta_data_gen::get_meta_attribute<&VscInput::q_set>(offsetof(VscInput, q_set), "q_set"),
+            meta_data_gen::get_meta_attribute<&VscInput::u_dc_set>(offsetof(VscInput, u_dc_set), "u_dc_set"),
+            meta_data_gen::get_meta_attribute<&VscInput::droop_p_set>(offsetof(VscInput, droop_p_set), "droop_p_set"),
+            meta_data_gen::get_meta_attribute<&VscInput::droop_gain>(offsetof(VscInput, droop_gain), "droop_gain"),
+            meta_data_gen::get_meta_attribute<&VscInput::droop_u_ref>(offsetof(VscInput, droop_u_ref), "droop_u_ref"),
+            meta_data_gen::get_meta_attribute<&VscInput::loss_a>(offsetof(VscInput, loss_a), "loss_a"),
+            meta_data_gen::get_meta_attribute<&VscInput::loss_b>(offsetof(VscInput, loss_b), "loss_b"),
+            meta_data_gen::get_meta_attribute<&VscInput::loss_c>(offsetof(VscInput, loss_c), "loss_c"),
+            meta_data_gen::get_meta_attribute<&VscInput::sn>(offsetof(VscInput, sn), "sn"),
+    };
+};
+
+template<>
 struct get_attributes_list<TransformerInput> {
     static constexpr std::array<MetaAttribute, 31> value{
             // all attributes including base class

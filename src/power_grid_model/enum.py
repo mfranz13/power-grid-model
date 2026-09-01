@@ -22,6 +22,7 @@ from power_grid_model._core.enum import (
     MeasuredTerminalType,
     ShortCircuitVoltageScaling,
     TapChangingStrategy,
+    VscControlMode,
     WindingType,
     _ExperimentalFeatures,
 )
@@ -39,6 +40,7 @@ __all__ = [
     "MeasuredTerminalType",
     "ShortCircuitVoltageScaling",
     "TapChangingStrategy",
+    "VscControlMode",
     "WindingType",
     "_ExperimentalFeatures",
 ]

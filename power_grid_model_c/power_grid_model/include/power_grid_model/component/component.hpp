@@ -92,4 +92,9 @@ class Fault;
 class TransformerTapRegulator;
 class VoltageRegulator;
 
+// fork extension: hybrid AC/DC power flow components
+class DcNode;
+class DcLine;
+class Vsc;
+
 } // namespace power_grid_model

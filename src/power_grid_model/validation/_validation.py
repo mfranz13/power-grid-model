@@ -40,6 +40,7 @@ from power_grid_model.enum import (
     FaultType,
     LoadGenType,
     MeasuredTerminalType,
+    VscControlMode,
     WindingType,
 )
 from power_grid_model.validation._rules import (
@@ -301,6 +302,15 @@ def validate_required_values(  # noqa: PLR0915
         AT.to_status,
     ]
     required[CT.link] = required["branch"].copy()
+    required[CT.dc_node] = required["base"] + [AT.u_rated]
+    required[CT.dc_line] = required["branch"] + [AT.r1]
+    required[CT.vsc] = required["branch"] + [
+        AT.control_p,
+        AT.q_set,
+        AT.loss_a,
+        AT.loss_b,
+        AT.loss_c,
+    ]
     required[CT.line] = required["branch"] + [
         AT.r1,
         AT.x1,
@@ -587,6 +597,9 @@ def validate_values(data: SingleDataset, calculation_type: CalculationType | Non
         CT.asym_gen: lambda d: validate_generic_load_gen(d, CT.asym_gen),
         CT.shunt: validate_shunt,
         CT.voltage_regulator: validate_voltage_regulator,
+        CT.dc_node: validate_dc_node,
+        CT.dc_line: validate_dc_line,
+        CT.vsc: validate_vsc,
     }
 
     for component, validator in component_validators.items():
@@ -717,6 +730,53 @@ def validate_asym_line(data: SingleDataset) -> list[ValidationError]:
     errors += _no_strict_subset_missing(data, c_fields, CT.asym_line)
     errors += _not_all_missing(data, required_c_matrix_fields + c_fields, CT.asym_line)
 
+    return errors
+
+
+def validate_dc_node(data: SingleDataset) -> list[ValidationError]:
+    errors = validate_base(data, CT.dc_node)
+    errors += _all_greater_than_zero(data, CT.dc_node, AT.u_rated)
+    return errors
+
+
+def validate_dc_line(data: SingleDataset) -> list[ValidationError]:
+    errors = validate_base(data, CT.dc_line)
+    errors += _all_valid_ids(data, CT.dc_line, AT.from_node, CT.dc_node)
+    errors += _all_valid_ids(data, CT.dc_line, AT.to_node, CT.dc_node)
+    errors += _all_boolean(data, CT.dc_line, AT.from_status)
+    errors += _all_boolean(data, CT.dc_line, AT.to_status)
+    errors += _all_greater_than_zero(data, CT.dc_line, AT.r1)
+    errors += _all_greater_than_zero(data, CT.dc_line, AT.i_n)
+    return errors
+
+
+def validate_vsc(data: SingleDataset) -> list[ValidationError]:
+    errors = validate_base(data, CT.vsc)
+    errors += _all_valid_ids(data, CT.vsc, AT.from_node, CT.node)
+    errors += _all_valid_ids(data, CT.vsc, AT.to_node, CT.dc_node)
+    errors += _all_boolean(data, CT.vsc, AT.from_status)
+    errors += _all_boolean(data, CT.vsc, AT.to_status)
+    errors += _all_valid_enum_values(data, CT.vsc, AT.control_p, VscControlMode)
+    errors += _all_greater_than_or_equal_to_zero(data, CT.vsc, AT.loss_a)
+    errors += _all_greater_than_or_equal_to_zero(data, CT.vsc, AT.loss_b)
+    errors += _all_greater_than_or_equal_to_zero(data, CT.vsc, AT.loss_c)
+    errors += _all_greater_than_zero(data, CT.vsc, AT.u_dc_set)
+    errors += _all_greater_than_zero(data, CT.vsc, AT.droop_gain)
+    errors += _all_greater_than_zero(data, CT.vsc, AT.droop_u_ref)
+    errors += _all_greater_than_zero(data, CT.vsc, AT.sn)
+    # mode-dependent required setpoints
+    vsc = data[CT.vsc]
+    mode_required = {
+        VscControlMode.p: [AT.p_set],
+        VscControlMode.u_dc: [AT.u_dc_set],
+        VscControlMode.droop: [AT.droop_p_set, AT.droop_gain],
+    }
+    for mode, fields in mode_required.items():
+        mask = vsc[AT.control_p] == mode
+        for field in fields:
+            invalid = mask & np.isnan(vsc[field])
+            if invalid.any():
+                errors.append(MissingValueError(CT.vsc, field, vsc[AT.id][invalid].flatten().tolist()))
     return errors
 
 

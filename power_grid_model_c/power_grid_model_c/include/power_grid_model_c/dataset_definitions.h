@@ -92,6 +92,40 @@ PGM_API extern PGM_MetaAttribute const* const PGM_def_input_link_from_node;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_input_link_to_node;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_input_link_from_status;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_input_link_to_status;
+// component dc_node
+PGM_API extern PGM_MetaComponent const* const PGM_def_input_dc_node;
+// attributes of input dc_node
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_node_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_node_u_rated;
+// component dc_line
+PGM_API extern PGM_MetaComponent const* const PGM_def_input_dc_line;
+// attributes of input dc_line
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_line_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_line_from_node;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_line_to_node;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_line_from_status;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_line_to_status;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_line_r1;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_dc_line_i_n;
+// component vsc
+PGM_API extern PGM_MetaComponent const* const PGM_def_input_vsc;
+// attributes of input vsc
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_from_node;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_to_node;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_from_status;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_to_status;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_control_p;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_p_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_q_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_u_dc_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_droop_p_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_droop_gain;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_droop_u_ref;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_loss_a;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_loss_b;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_loss_c;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_sn;
 // component generic_branch
 PGM_API extern PGM_MetaComponent const* const PGM_def_input_generic_branch;
 // attributes of input generic_branch
@@ -424,6 +458,44 @@ PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_p_to;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_q_to;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_i_to;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_s_to;
+// component dc_line
+PGM_API extern PGM_MetaComponent const* const PGM_def_sym_output_dc_line;
+// attributes of sym_output dc_line
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_energized;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_loading;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_p_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_q_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_i_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_s_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_p_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_q_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_i_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_s_to;
+// component vsc
+PGM_API extern PGM_MetaComponent const* const PGM_def_sym_output_vsc;
+// attributes of sym_output vsc
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_energized;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_loading;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_p_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_q_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_i_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_s_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_p_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_q_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_i_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_vsc_s_to;
+// component dc_node
+PGM_API extern PGM_MetaComponent const* const PGM_def_sym_output_dc_node;
+// attributes of sym_output dc_node
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_energized;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_u_pu;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_u;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_u_angle;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_p;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_q;
 // component transformer_tap_regulator
 PGM_API extern PGM_MetaComponent const* const PGM_def_sym_output_transformer_tap_regulator;
 // attributes of sym_output transformer_tap_regulator
@@ -647,6 +719,44 @@ PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_p_to
 PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_q_to;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_i_to;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_s_to;
+// component dc_line
+PGM_API extern PGM_MetaComponent const* const PGM_def_asym_output_dc_line;
+// attributes of asym_output dc_line
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_energized;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_loading;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_p_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_q_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_i_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_s_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_p_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_q_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_i_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_s_to;
+// component vsc
+PGM_API extern PGM_MetaComponent const* const PGM_def_asym_output_vsc;
+// attributes of asym_output vsc
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_energized;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_loading;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_p_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_q_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_i_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_s_from;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_p_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_q_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_i_to;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_vsc_s_to;
+// component dc_node
+PGM_API extern PGM_MetaComponent const* const PGM_def_asym_output_dc_node;
+// attributes of asym_output dc_node
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_energized;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_u_pu;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_u;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_u_angle;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_p;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_q;
 // component transformer_tap_regulator
 PGM_API extern PGM_MetaComponent const* const PGM_def_asym_output_transformer_tap_regulator;
 // attributes of asym_output transformer_tap_regulator
@@ -812,6 +922,32 @@ PGM_API extern PGM_MetaComponent const* const PGM_def_update_link;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_update_link_id;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_update_link_from_status;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_update_link_to_status;
+// component dc_node
+PGM_API extern PGM_MetaComponent const* const PGM_def_update_dc_node;
+// attributes of update dc_node
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_dc_node_id;
+// component dc_line
+PGM_API extern PGM_MetaComponent const* const PGM_def_update_dc_line;
+// attributes of update dc_line
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_dc_line_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_dc_line_from_status;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_dc_line_to_status;
+// component vsc
+PGM_API extern PGM_MetaComponent const* const PGM_def_update_vsc;
+// attributes of update vsc
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_id;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_from_status;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_to_status;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_control_p;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_p_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_q_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_u_dc_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_droop_p_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_droop_gain;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_droop_u_ref;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_loss_a;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_loss_b;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_loss_c;
 // component transformer
 PGM_API extern PGM_MetaComponent const* const PGM_def_update_transformer;
 // attributes of update transformer

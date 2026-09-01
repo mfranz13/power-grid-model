@@ -71,6 +71,19 @@ class CalculationMethod(IntEnum):
     iterative_current = 3
     linear_current = 4
     iec60909 = 5
+    hybrid_newton_raphson = 101
+    """Fork extension: unified hybrid AC/DC Newton-Raphson power flow"""
+
+
+class VscControlMode(IntEnum):
+    """Fork extension: active power control mode of a VSC converter"""
+
+    p = 0
+    """Fixed active power setpoint at the AC side"""
+    u_dc = 1
+    """Fixed DC voltage at the dc_node"""
+    droop = 2
+    """P-U_dc droop control"""
 
 
 class TapChangingStrategy(IntEnum):

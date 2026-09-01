@@ -70,7 +70,9 @@ concept validate_component_types_c =
                          ThreeWindingTransformer> &&                                                       //
     dependent_type_check<CompList, TransformerTapRegulator, Node, Transformer, ThreeWindingTransformer> && //
     dependent_type_check<CompList, Fault, Node> &&                                                         //
-    dependent_type_check<CompList, VoltageRegulator, SymGenerator, AsymGenerator, SymLoad, AsymLoad>;
+    dependent_type_check<CompList, VoltageRegulator, SymGenerator, AsymGenerator, SymLoad, AsymLoad> &&    //
+    dependent_type_check<CompList, DcLine, DcNode> &&                                                      //
+    dependent_type_check<CompList, Vsc, Node, DcNode>;
 } // namespace detail
 
 template <class T, class U> class MainModelType;

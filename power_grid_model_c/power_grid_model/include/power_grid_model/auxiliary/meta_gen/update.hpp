@@ -65,6 +65,27 @@ struct get_attributes_list<ApplianceUpdate> {
 };
 
 template<>
+struct get_attributes_list<VscUpdate> {
+    static constexpr std::array<MetaAttribute, 13> value{
+            // all attributes including base class
+            
+            meta_data_gen::get_meta_attribute<&VscUpdate::id>(offsetof(VscUpdate, id), "id"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::from_status>(offsetof(VscUpdate, from_status), "from_status"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::to_status>(offsetof(VscUpdate, to_status), "to_status"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::control_p>(offsetof(VscUpdate, control_p), "control_p"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::p_set>(offsetof(VscUpdate, p_set), "p_set"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::q_set>(offsetof(VscUpdate, q_set), "q_set"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::u_dc_set>(offsetof(VscUpdate, u_dc_set), "u_dc_set"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::droop_p_set>(offsetof(VscUpdate, droop_p_set), "droop_p_set"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::droop_gain>(offsetof(VscUpdate, droop_gain), "droop_gain"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::droop_u_ref>(offsetof(VscUpdate, droop_u_ref), "droop_u_ref"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::loss_a>(offsetof(VscUpdate, loss_a), "loss_a"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::loss_b>(offsetof(VscUpdate, loss_b), "loss_b"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::loss_c>(offsetof(VscUpdate, loss_c), "loss_c"),
+    };
+};
+
+template<>
 struct get_attributes_list<TransformerUpdate> {
     static constexpr std::array<MetaAttribute, 4> value{
             // all attributes including base class

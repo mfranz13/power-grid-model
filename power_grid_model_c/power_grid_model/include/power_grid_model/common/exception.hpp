@@ -203,6 +203,19 @@ class IDWrongType : public PowerGridError {
     explicit IDWrongType(ID id) : PowerGridError{std::format("Wrong type for object with id {}\n", id)} {}
 };
 
+class DcComponentsRequireHybridMethod : public PowerGridError {
+  public:
+    DcComponentsRequireHybridMethod()
+        : PowerGridError{"Grids with DC components (dc_node/dc_line/vsc) only support the symmetric power flow "
+                         "calculation with the hybrid_newton_raphson method\n"} {}
+};
+
+class DcControlConfigurationError : public PowerGridError {
+  public:
+    explicit DcControlConfigurationError(std::string_view msg)
+        : PowerGridError{std::format("Invalid DC control configuration: {}\n", msg)} {}
+};
+
 class ConflictingAngleMeasurementType : public PowerGridError {
   public:
     ConflictingAngleMeasurementType(std::string_view msg)

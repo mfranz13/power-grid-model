@@ -81,6 +81,40 @@ PGM_MetaAttribute const* const PGM_def_input_link_from_node = PGM_meta_get_attri
 PGM_MetaAttribute const* const PGM_def_input_link_to_node = PGM_meta_get_attribute_by_name(nullptr, "input", "link", "to_node");
 PGM_MetaAttribute const* const PGM_def_input_link_from_status = PGM_meta_get_attribute_by_name(nullptr, "input", "link", "from_status");
 PGM_MetaAttribute const* const PGM_def_input_link_to_status = PGM_meta_get_attribute_by_name(nullptr, "input", "link", "to_status");
+// component dc_node
+PGM_MetaComponent const* const PGM_def_input_dc_node = PGM_meta_get_component_by_name(nullptr, "input", "dc_node");
+// attributes of input dc_node
+PGM_MetaAttribute const* const PGM_def_input_dc_node_id = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_node", "id");
+PGM_MetaAttribute const* const PGM_def_input_dc_node_u_rated = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_node", "u_rated");
+// component dc_line
+PGM_MetaComponent const* const PGM_def_input_dc_line = PGM_meta_get_component_by_name(nullptr, "input", "dc_line");
+// attributes of input dc_line
+PGM_MetaAttribute const* const PGM_def_input_dc_line_id = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_line", "id");
+PGM_MetaAttribute const* const PGM_def_input_dc_line_from_node = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_line", "from_node");
+PGM_MetaAttribute const* const PGM_def_input_dc_line_to_node = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_line", "to_node");
+PGM_MetaAttribute const* const PGM_def_input_dc_line_from_status = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_line", "from_status");
+PGM_MetaAttribute const* const PGM_def_input_dc_line_to_status = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_line", "to_status");
+PGM_MetaAttribute const* const PGM_def_input_dc_line_r1 = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_line", "r1");
+PGM_MetaAttribute const* const PGM_def_input_dc_line_i_n = PGM_meta_get_attribute_by_name(nullptr, "input", "dc_line", "i_n");
+// component vsc
+PGM_MetaComponent const* const PGM_def_input_vsc = PGM_meta_get_component_by_name(nullptr, "input", "vsc");
+// attributes of input vsc
+PGM_MetaAttribute const* const PGM_def_input_vsc_id = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "id");
+PGM_MetaAttribute const* const PGM_def_input_vsc_from_node = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "from_node");
+PGM_MetaAttribute const* const PGM_def_input_vsc_to_node = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "to_node");
+PGM_MetaAttribute const* const PGM_def_input_vsc_from_status = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "from_status");
+PGM_MetaAttribute const* const PGM_def_input_vsc_to_status = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "to_status");
+PGM_MetaAttribute const* const PGM_def_input_vsc_control_p = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "control_p");
+PGM_MetaAttribute const* const PGM_def_input_vsc_p_set = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "p_set");
+PGM_MetaAttribute const* const PGM_def_input_vsc_q_set = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "q_set");
+PGM_MetaAttribute const* const PGM_def_input_vsc_u_dc_set = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "u_dc_set");
+PGM_MetaAttribute const* const PGM_def_input_vsc_droop_p_set = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "droop_p_set");
+PGM_MetaAttribute const* const PGM_def_input_vsc_droop_gain = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "droop_gain");
+PGM_MetaAttribute const* const PGM_def_input_vsc_droop_u_ref = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "droop_u_ref");
+PGM_MetaAttribute const* const PGM_def_input_vsc_loss_a = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "loss_a");
+PGM_MetaAttribute const* const PGM_def_input_vsc_loss_b = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "loss_b");
+PGM_MetaAttribute const* const PGM_def_input_vsc_loss_c = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "loss_c");
+PGM_MetaAttribute const* const PGM_def_input_vsc_sn = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "sn");
 // component generic_branch
 PGM_MetaComponent const* const PGM_def_input_generic_branch = PGM_meta_get_component_by_name(nullptr, "input", "generic_branch");
 // attributes of input generic_branch
@@ -413,6 +447,44 @@ PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_p_to = PGM_meta_get_
 PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_q_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "asym_line", "q_to");
 PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_i_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "asym_line", "i_to");
 PGM_MetaAttribute const* const PGM_def_sym_output_asym_line_s_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "asym_line", "s_to");
+// component dc_line
+PGM_MetaComponent const* const PGM_def_sym_output_dc_line = PGM_meta_get_component_by_name(nullptr, "sym_output", "dc_line");
+// attributes of sym_output dc_line
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_id = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "id");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_energized = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "energized");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_loading = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "loading");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_p_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "p_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_q_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "q_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_i_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "i_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_s_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "s_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_p_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "p_to");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_q_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "q_to");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_i_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "i_to");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_line_s_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_line", "s_to");
+// component vsc
+PGM_MetaComponent const* const PGM_def_sym_output_vsc = PGM_meta_get_component_by_name(nullptr, "sym_output", "vsc");
+// attributes of sym_output vsc
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_id = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "id");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_energized = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "energized");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_loading = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "loading");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_p_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "p_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_q_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "q_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_i_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "i_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_s_from = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "s_from");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_p_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "p_to");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_q_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "q_to");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_i_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "i_to");
+PGM_MetaAttribute const* const PGM_def_sym_output_vsc_s_to = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "vsc", "s_to");
+// component dc_node
+PGM_MetaComponent const* const PGM_def_sym_output_dc_node = PGM_meta_get_component_by_name(nullptr, "sym_output", "dc_node");
+// attributes of sym_output dc_node
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_id = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_node", "id");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_energized = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_node", "energized");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_u_pu = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_node", "u_pu");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_u = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_node", "u");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_u_angle = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_node", "u_angle");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_p = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_node", "p");
+PGM_MetaAttribute const* const PGM_def_sym_output_dc_node_q = PGM_meta_get_attribute_by_name(nullptr, "sym_output", "dc_node", "q");
 // component transformer_tap_regulator
 PGM_MetaComponent const* const PGM_def_sym_output_transformer_tap_regulator = PGM_meta_get_component_by_name(nullptr, "sym_output", "transformer_tap_regulator");
 // attributes of sym_output transformer_tap_regulator
@@ -636,6 +708,44 @@ PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_p_to = PGM_meta_get
 PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_q_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "asym_line", "q_to");
 PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_i_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "asym_line", "i_to");
 PGM_MetaAttribute const* const PGM_def_asym_output_asym_line_s_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "asym_line", "s_to");
+// component dc_line
+PGM_MetaComponent const* const PGM_def_asym_output_dc_line = PGM_meta_get_component_by_name(nullptr, "asym_output", "dc_line");
+// attributes of asym_output dc_line
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_id = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "id");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_energized = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "energized");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_loading = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "loading");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_p_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "p_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_q_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "q_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_i_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "i_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_s_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "s_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_p_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "p_to");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_q_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "q_to");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_i_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "i_to");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_line_s_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_line", "s_to");
+// component vsc
+PGM_MetaComponent const* const PGM_def_asym_output_vsc = PGM_meta_get_component_by_name(nullptr, "asym_output", "vsc");
+// attributes of asym_output vsc
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_id = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "id");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_energized = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "energized");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_loading = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "loading");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_p_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "p_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_q_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "q_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_i_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "i_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_s_from = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "s_from");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_p_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "p_to");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_q_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "q_to");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_i_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "i_to");
+PGM_MetaAttribute const* const PGM_def_asym_output_vsc_s_to = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "vsc", "s_to");
+// component dc_node
+PGM_MetaComponent const* const PGM_def_asym_output_dc_node = PGM_meta_get_component_by_name(nullptr, "asym_output", "dc_node");
+// attributes of asym_output dc_node
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_id = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_node", "id");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_energized = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_node", "energized");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_u_pu = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_node", "u_pu");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_u = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_node", "u");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_u_angle = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_node", "u_angle");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_p = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_node", "p");
+PGM_MetaAttribute const* const PGM_def_asym_output_dc_node_q = PGM_meta_get_attribute_by_name(nullptr, "asym_output", "dc_node", "q");
 // component transformer_tap_regulator
 PGM_MetaComponent const* const PGM_def_asym_output_transformer_tap_regulator = PGM_meta_get_component_by_name(nullptr, "asym_output", "transformer_tap_regulator");
 // attributes of asym_output transformer_tap_regulator
@@ -801,6 +911,32 @@ PGM_MetaComponent const* const PGM_def_update_link = PGM_meta_get_component_by_n
 PGM_MetaAttribute const* const PGM_def_update_link_id = PGM_meta_get_attribute_by_name(nullptr, "update", "link", "id");
 PGM_MetaAttribute const* const PGM_def_update_link_from_status = PGM_meta_get_attribute_by_name(nullptr, "update", "link", "from_status");
 PGM_MetaAttribute const* const PGM_def_update_link_to_status = PGM_meta_get_attribute_by_name(nullptr, "update", "link", "to_status");
+// component dc_node
+PGM_MetaComponent const* const PGM_def_update_dc_node = PGM_meta_get_component_by_name(nullptr, "update", "dc_node");
+// attributes of update dc_node
+PGM_MetaAttribute const* const PGM_def_update_dc_node_id = PGM_meta_get_attribute_by_name(nullptr, "update", "dc_node", "id");
+// component dc_line
+PGM_MetaComponent const* const PGM_def_update_dc_line = PGM_meta_get_component_by_name(nullptr, "update", "dc_line");
+// attributes of update dc_line
+PGM_MetaAttribute const* const PGM_def_update_dc_line_id = PGM_meta_get_attribute_by_name(nullptr, "update", "dc_line", "id");
+PGM_MetaAttribute const* const PGM_def_update_dc_line_from_status = PGM_meta_get_attribute_by_name(nullptr, "update", "dc_line", "from_status");
+PGM_MetaAttribute const* const PGM_def_update_dc_line_to_status = PGM_meta_get_attribute_by_name(nullptr, "update", "dc_line", "to_status");
+// component vsc
+PGM_MetaComponent const* const PGM_def_update_vsc = PGM_meta_get_component_by_name(nullptr, "update", "vsc");
+// attributes of update vsc
+PGM_MetaAttribute const* const PGM_def_update_vsc_id = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "id");
+PGM_MetaAttribute const* const PGM_def_update_vsc_from_status = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "from_status");
+PGM_MetaAttribute const* const PGM_def_update_vsc_to_status = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "to_status");
+PGM_MetaAttribute const* const PGM_def_update_vsc_control_p = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "control_p");
+PGM_MetaAttribute const* const PGM_def_update_vsc_p_set = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "p_set");
+PGM_MetaAttribute const* const PGM_def_update_vsc_q_set = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "q_set");
+PGM_MetaAttribute const* const PGM_def_update_vsc_u_dc_set = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "u_dc_set");
+PGM_MetaAttribute const* const PGM_def_update_vsc_droop_p_set = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "droop_p_set");
+PGM_MetaAttribute const* const PGM_def_update_vsc_droop_gain = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "droop_gain");
+PGM_MetaAttribute const* const PGM_def_update_vsc_droop_u_ref = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "droop_u_ref");
+PGM_MetaAttribute const* const PGM_def_update_vsc_loss_a = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "loss_a");
+PGM_MetaAttribute const* const PGM_def_update_vsc_loss_b = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "loss_b");
+PGM_MetaAttribute const* const PGM_def_update_vsc_loss_c = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "loss_c");
 // component transformer
 PGM_MetaComponent const* const PGM_def_update_transformer = PGM_meta_get_component_by_name(nullptr, "update", "transformer");
 // attributes of update transformer

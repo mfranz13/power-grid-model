@@ -21,6 +21,18 @@
           "class_name": "LinkInput"
         },
         {
+          "names": ["dc_node"],
+          "class_name": "DcNodeInput"
+        },
+        {
+          "names": ["dc_line"],
+          "class_name": "DcLineInput"
+        },
+        {
+          "names": ["vsc"],
+          "class_name": "VscInput"
+        },
+        {
           "names": ["generic_branch"],
           "class_name": "GenericBranchInput"
         },
@@ -79,8 +91,12 @@
           "class_name": "NodeOutput"
         },
         {
-          "names": ["line", "link", "transformer", "generic_branch", "asym_line"],
+          "names": ["line", "link", "transformer", "generic_branch", "asym_line", "dc_line", "vsc"],
           "class_name": "BranchOutput"
+        },
+        {
+          "names": ["dc_node"],
+          "class_name": "NodeOutput"
         },
         {
           "names": ["transformer_tap_regulator"],
@@ -135,6 +151,18 @@
         {
           "names": ["link"],
           "class_name": "BranchUpdate"
+        },
+        {
+          "names": ["dc_node"],
+          "class_name": "BaseUpdate"
+        },
+        {
+          "names": ["dc_line"],
+          "class_name": "BranchUpdate"
+        },
+        {
+          "names": ["vsc"],
+          "class_name": "VscUpdate"
         },
         {
           "names": ["transformer"],

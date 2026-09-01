@@ -366,6 +366,14 @@ class MainModelImpl {
             throw InvalidCalculationMethod{};
         }
 
+        // fork extension: DC components only support the symmetric hybrid AC/DC power flow
+        if (state_.components.template size<DcNode>() > 0 &&
+            (options.calculation_type != CalculationType::power_flow ||
+             options.calculation_symmetry != CalculationSymmetry::symmetric ||
+             options.calculation_method != CalculationMethod::hybrid_newton_raphson)) {
+            throw DcComponentsRequireHybridMethod{};
+        }
+
         calculation_type_symmetry_func_selector(
             options.calculation_type, options.calculation_symmetry,
             [cache_run]<calculation_type_tag calculation_type, symmetry_tag sym>(
