@@ -17,9 +17,11 @@
 #include "../common/typing.hpp"
 #include "../component/component.hpp"
 #include "../component/current_sensor.hpp"
+#include "../component/dc_node.hpp"
 #include "../component/fault.hpp"
 #include "../component/load_gen.hpp"
 #include "../component/node.hpp"
+#include "../component/vsc.hpp"
 #include "../component/power_sensor.hpp"
 #include "../component/shunt.hpp"
 #include "../component/source.hpp"
@@ -159,6 +161,39 @@ inline void prepare_input_status(main_model_state_c auto const& state, std::vect
 }
 } // namespace detail
 
+// fork extension: fill the hybrid AC/DC data of PowerFlowInput (DC bus flags + VSC parameters).
+// The DC node -> math bus mapping composes user node -> topo node -> math bus, so it stays
+// correct even in the presence of supernodes elsewhere in the grid.
+template <symmetry_tag sym>
+inline void prepare_hybrid_dc_input(main_model_state_c auto const& state,
+                                    std::vector<PowerFlowInput<sym>>& pf_input) {
+    Idx const n_dc_node = state.components.template size<DcNode>();
+    if (n_dc_node == 0) {
+        return;
+    }
+    for (Idx i = 0, n = std::ssize(pf_input); i != n; ++i) {
+        pf_input[i].is_dc_bus.assign(state.math_topology[i]->n_bus(), 0);
+    }
+    Idx const node_offset = get_component_sequence_offset<Node, DcNode>(state.components);
+    auto const& user_nodes_to_topo_nodes = state.reduced_topology->topo_node_coup.coupling.user_nodes_to_topo_nodes;
+    for (Idx seq = 0; seq != n_dc_node; ++seq) {
+        Idx const topo_node = user_nodes_to_topo_nodes[node_offset + seq].group;
+        Idx2D const math_idx = state.topo_comp_coup->node[topo_node];
+        if (math_idx.group != isolated_component) {
+            pf_input[math_idx.group].is_dc_bus[math_idx.pos] = 1;
+        }
+    }
+    Idx const branch_offset = get_component_sequence_offset<Edge, Vsc>(state.components);
+    for (Idx seq = 0, n_vsc = state.components.template size<Vsc>(); seq != n_vsc; ++seq) {
+        Idx2D const math_idx = state.topo_comp_coup->branch[branch_offset + seq];
+        if (math_idx.group != isolated_component) {
+            auto const& vsc = get_component_by_sequence<Vsc>(state.components, seq);
+            pf_input[math_idx.group].vsc_math_branch.push_back(math_idx.pos);
+            pf_input[math_idx.group].vsc.push_back(vsc.calc_param());
+        }
+    }
+}
+
 template <symmetry_tag sym>
 inline std::vector<PowerFlowInput<sym>> prepare_power_flow_input(main_model_state_c auto const& state,
                                                                  Idx n_math_solvers) {
@@ -183,6 +218,10 @@ inline std::vector<PowerFlowInput<sym>> prepare_power_flow_input(main_model_stat
 
     prepare_input_status<sym, PowerFlowInput<sym>, &PowerFlowInput<sym>::load_gen_status, GenericLoadGen>(
         state, state.topo_comp_coup->load_gen, pf_input);
+
+    if constexpr (requires { state.components.template size<DcNode>(); }) {
+        prepare_hybrid_dc_input<sym>(state, pf_input);
+    }
 
     return pf_input;
 }

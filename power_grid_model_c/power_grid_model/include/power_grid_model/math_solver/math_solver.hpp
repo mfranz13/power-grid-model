@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "hybrid_nr_pf_solver.hpp"
 #include "iterative_current_pf_solver.hpp"
 #include "iterative_linear_se_solver.hpp"
 #include "linear_pf_solver.hpp"
@@ -56,7 +57,7 @@ template <symmetry_tag sym> class MathSolver : public MathSolverBase<sym> {
         case newton_raphson:
             return run_power_flow_newton_raphson(input, err_tol, max_iter, cache_run, log, y_bus);
         case hybrid_newton_raphson:
-            throw NotImplementedError{};
+            return run_power_flow_hybrid(input, err_tol, max_iter, cache_run, log, y_bus);
         case linear:
             return run_power_flow_linear(input, err_tol, max_iter, log, y_bus);
         case linear_current:
@@ -108,6 +109,7 @@ template <symmetry_tag sym> class MathSolver : public MathSolverBase<sym> {
         linear_pf_solver_.reset();
         iterative_current_pf_solver_.reset();
         iterative_linear_se_solver_.reset();
+        hybrid_nr_pf_solver_.reset();
     }
 
     void parameters_changed(bool changed) final {
@@ -125,6 +127,7 @@ template <symmetry_tag sym> class MathSolver : public MathSolverBase<sym> {
     std::optional<IterativeLinearSESolver<sym>> iterative_linear_se_solver_;
     std::optional<NewtonRaphsonSESolver<sym>> newton_raphson_se_solver_;
     std::optional<ShortCircuitSolver<sym>> iec60909_sc_solver_;
+    std::optional<HybridNRPFSolver<sym>> hybrid_nr_pf_solver_;
 
     SolverOutput<sym> run_power_flow_newton_raphson(PowerFlowInput<sym> const& input, double err_tol, Idx max_iter,
                                                     bool cache_run, Logger& log, YBus<sym> const& y_bus) {
@@ -133,6 +136,15 @@ template <symmetry_tag sym> class MathSolver : public MathSolverBase<sym> {
             newton_raphson_pf_solver_.emplace(y_bus, *topo_ptr_);
         }
         return newton_raphson_pf_solver_.value().run_power_flow(y_bus, input, err_tol, max_iter, cache_run, log);
+    }
+
+    SolverOutput<sym> run_power_flow_hybrid(PowerFlowInput<sym> const& input, double err_tol, Idx max_iter,
+                                            bool cache_run, Logger& log, YBus<sym> const& y_bus) {
+        if (!hybrid_nr_pf_solver_.has_value()) {
+            Timer const timer{log, LogEvent::create_math_solver};
+            hybrid_nr_pf_solver_.emplace(y_bus, *topo_ptr_);
+        }
+        return hybrid_nr_pf_solver_.value().run_power_flow(y_bus, input, err_tol, max_iter, cache_run, log);
     }
 
     SolverOutput<sym> run_power_flow_linear(PowerFlowInput<sym> const& input, double /* err_tol */, Idx /* max_iter */,

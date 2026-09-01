@@ -242,6 +242,21 @@ template <symmetry_tag sym_type> struct VoltageRegulatorCalcParam {
     ID generator_id{};
 };
 
+// fork extension: VSC converter parameters for the hybrid AC/DC power flow, all in per unit
+struct VscCalcParam {
+    IntS status{};
+    VscControlMode control_p{VscControlMode::p};
+    double p_set{};
+    double q_set{};
+    double u_dc_set{};
+    double droop_p_set{};
+    double droop_gain{};
+    double droop_u_ref{};
+    double loss_a{};
+    double loss_b{};
+    double loss_c{};
+};
+
 template <symmetry_tag sym_type> struct MathModelParam {
     using sym = sym_type;
 
@@ -279,6 +294,11 @@ template <symmetry_tag sym_type> struct PowerFlowInput {
     ComplexValueVector<sym> s_injection; // Specified injection power of each load_gen
     std::vector<VoltageRegulatorCalcParam<sym>> voltage_regulator;
     IntSVector load_gen_status;
+
+    // fork extension: hybrid AC/DC data; empty when the math model has no DC components
+    IntSVector is_dc_bus;          // per math bus
+    IdxVector vsc_math_branch;     // per VSC: math branch index in this math model
+    std::vector<VscCalcParam> vsc; // aligned with vsc_math_branch
 };
 
 template <symmetry_tag sym_type> struct StateEstimationInput {

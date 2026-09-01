@@ -93,8 +93,13 @@ template <typename Component, typename IndexType, class ComponentContainer, non_
              std::convertible_to<IndexType, std::ranges::range_value_t<decltype(comp_base_sequence<Component>(
                                                 MainModelState<ComponentContainer>{}))>>
 constexpr void produce_output(MainModelState<ComponentContainer> const& state, ComponentOutput output, ResFunc func) {
-    std::ranges::transform(get_component_citer<Component>(state.components), comp_base_sequence<Component>(state),
-                           std::ranges::begin(output), func);
+    // fork extension: citer<Component> iterates the whole retrievable union of Component (e.g. Node
+    // plus DcNode), while the output span only covers the concrete component's own rows. The
+    // concrete objects form the prefix of the union (registration order), so bound the iteration
+    // by the output size.
+    std::ranges::transform(get_component_citer<Component>(state.components) |
+                               std::views::take(std::ranges::ssize(output)),
+                           comp_base_sequence<Component>(state), std::ranges::begin(output), func);
 }
 
 } // namespace detail

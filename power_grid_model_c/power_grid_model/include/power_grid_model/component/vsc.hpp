@@ -47,6 +47,20 @@ class Vsc final : public Branch {
     double loading(double max_s, double /* max_i */) const override { return is_nan(sn_) ? 0.0 : max_s / sn_; };
     double phase_shift() const override { return 0.0; }
 
+    VscCalcParam calc_param() const {
+        return VscCalcParam{.status = static_cast<IntS>(edge_status()),
+                            .control_p = control_p_,
+                            .p_set = p_set_pu(),
+                            .q_set = q_set_pu(),
+                            .u_dc_set = u_dc_set_pu(),
+                            .droop_p_set = droop_p_set_pu(),
+                            .droop_gain = droop_gain_pu(),
+                            .droop_u_ref = droop_u_ref_pu(),
+                            .loss_a = loss_a_pu(),
+                            .loss_b = loss_b_pu(),
+                            .loss_c = loss_c_pu()};
+    }
+
     // control parameters in per unit, for the hybrid solver input
     constexpr VscControlMode control_p() const { return control_p_; }
     constexpr double p_set_pu() const { return p_set_ / base_power_3p; }
