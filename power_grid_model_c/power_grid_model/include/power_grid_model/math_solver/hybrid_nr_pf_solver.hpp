@@ -613,7 +613,7 @@ template <symmetry_tag sym_type> class HybridNRPFSolver {
                          -imag(input.s_injection[load_number]) * x_[bus_number].v());
                 break;
             default:
-                throw MissingCaseForEnumError("Jacobian and deviation calculation", type);
+                throw BadInternalEnumValueError{"Jacobian and deviation calculation", type};
             }
         }
     }

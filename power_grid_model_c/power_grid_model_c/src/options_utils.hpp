@@ -45,6 +45,8 @@ constexpr auto get_calculation_method(PGM_Options const& options) {
         return linear_current;
     case PGM_iec60909:
         return iec60909;
+    case PGM_hybrid_newton_raphson: // fork extension
+        return hybrid_newton_raphson;
     default:
         throw power_grid_model::BadRequestEnumValueError{"get_calculation_method", "PGM_CalculationMethod",
                                                          options.calculation_method};
