@@ -73,6 +73,21 @@
           "data_type": "double",
           "names": ["loss_a", "loss_b", "loss_c"],
           "description": "IEC 62751-2 loss polynomial coefficients"
+        },
+        {
+          "data_type": "VscQControlMode",
+          "names": "control_q",
+          "description": "reactive power control mode"
+        },
+        {
+          "data_type": "double",
+          "names": "u_ac_set",
+          "description": "AC voltage magnitude setpoint for u_ac control mode"
+        },
+        {
+          "data_type": "double",
+          "names": ["q_min", "q_max"],
+          "description": "reactive power limits for u_ac control mode, from-side branch convention"
         }
       ]
     },

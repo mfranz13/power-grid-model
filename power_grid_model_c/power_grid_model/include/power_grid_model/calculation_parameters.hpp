@@ -255,6 +255,10 @@ struct VscCalcParam {
     double loss_a{};
     double loss_b{};
     double loss_c{};
+    VscQControlMode control_q{VscQControlMode::q};
+    double u_ac_set{};
+    double q_min{}; // NaN = unlimited on that side
+    double q_max{};
 };
 
 template <symmetry_tag sym_type> struct MathModelParam {

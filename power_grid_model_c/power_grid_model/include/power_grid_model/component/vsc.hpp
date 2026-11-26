@@ -37,6 +37,11 @@ class Vsc final : public Branch {
           loss_b_{vsc_input.loss_b},
           loss_c_{vsc_input.loss_c},
           sn_{vsc_input.sn},
+          control_q_{is_nan(vsc_input.control_q) ? VscQControlMode::q : vsc_input.control_q},
+          u_ac_set_{vsc_input.u_ac_set},
+          q_min_{vsc_input.q_min},
+          q_max_{vsc_input.q_max},
+          u_ac_rated_{u1},
           u_dc_rated_{u2},
           base_i_from_{base_power_3p / u1 / sqrt3},
           base_i_to_{base_power_3p / u2} {}
@@ -58,7 +63,11 @@ class Vsc final : public Branch {
                             .droop_u_ref = droop_u_ref_pu(),
                             .loss_a = loss_a_pu(),
                             .loss_b = loss_b_pu(),
-                            .loss_c = loss_c_pu()};
+                            .loss_c = loss_c_pu(),
+                            .control_q = control_q_,
+                            .u_ac_set = u_ac_set_pu(),
+                            .q_min = q_min_pu(),
+                            .q_max = q_max_pu()};
     }
 
     // control parameters in per unit, for the hybrid solver input
@@ -72,6 +81,10 @@ class Vsc final : public Branch {
     constexpr double loss_a_pu() const { return loss_a_ / base_power_3p; }
     constexpr double loss_b_pu() const { return loss_b_ * base_i_from_ / base_power_3p; }
     constexpr double loss_c_pu() const { return loss_c_ * base_i_from_ * base_i_from_ / base_power_3p; }
+    constexpr VscQControlMode control_q() const { return control_q_; }
+    constexpr double u_ac_set_pu() const { return u_ac_set_ / u_ac_rated_; }
+    constexpr double q_min_pu() const { return q_min_ / base_power_3p; }
+    constexpr double q_max_pu() const { return q_max_ / base_power_3p; }
 
     UpdateChange update(VscUpdate const& update_data) {
         assert(update_data.id == this->id() || is_nan(update_data.id));
@@ -88,6 +101,12 @@ class Vsc final : public Branch {
         update_member(loss_a_, update_data.loss_a);
         update_member(loss_b_, update_data.loss_b);
         update_member(loss_c_, update_data.loss_c);
+        if (!is_nan(update_data.control_q)) {
+            control_q_ = update_data.control_q;
+        }
+        update_member(u_ac_set_, update_data.u_ac_set);
+        update_member(q_min_, update_data.q_min);
+        update_member(q_max_, update_data.q_max);
         // setpoint/control changes reach the solver via PowerFlowInput, prepared per calculation
         return {.topo = changed, .param = changed};
     }
@@ -105,6 +124,10 @@ class Vsc final : public Branch {
         set_if_not_nan(update_data.loss_a, loss_a_);
         set_if_not_nan(update_data.loss_b, loss_b_);
         set_if_not_nan(update_data.loss_c, loss_c_);
+        set_if_not_nan(update_data.control_q, control_q_);
+        set_if_not_nan(update_data.u_ac_set, u_ac_set_);
+        set_if_not_nan(update_data.q_min, q_min_);
+        set_if_not_nan(update_data.q_max, q_max_);
         return update_data;
     }
 
@@ -121,6 +144,11 @@ class Vsc final : public Branch {
     double loss_b_;
     double loss_c_;
     double sn_;
+    VscQControlMode control_q_;
+    double u_ac_set_;
+    double q_min_;
+    double q_max_;
+    double u_ac_rated_;
     double u_dc_rated_;
     double base_i_from_;
     double base_i_to_;

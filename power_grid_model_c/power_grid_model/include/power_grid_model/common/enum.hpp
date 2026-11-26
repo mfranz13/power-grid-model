@@ -49,6 +49,12 @@ enum class VscControlMode : IntS {
     droop = 2, // P-U_dc droop
 };
 
+// fork extension: reactive power control mode of a VSC converter
+enum class VscQControlMode : IntS {
+    q = 0,    // fixed Q_t setpoint at the AC side
+    u_ac = 1, // fixed AC voltage magnitude at the AC node
+};
+
 enum class MeasuredTerminalType : IntS {
     branch_from = 0,
     branch_to = 1,

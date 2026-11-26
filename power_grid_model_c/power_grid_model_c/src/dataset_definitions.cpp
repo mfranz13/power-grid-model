@@ -115,6 +115,10 @@ PGM_MetaAttribute const* const PGM_def_input_vsc_loss_a = PGM_meta_get_attribute
 PGM_MetaAttribute const* const PGM_def_input_vsc_loss_b = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "loss_b");
 PGM_MetaAttribute const* const PGM_def_input_vsc_loss_c = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "loss_c");
 PGM_MetaAttribute const* const PGM_def_input_vsc_sn = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "sn");
+PGM_MetaAttribute const* const PGM_def_input_vsc_control_q = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "control_q");
+PGM_MetaAttribute const* const PGM_def_input_vsc_u_ac_set = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "u_ac_set");
+PGM_MetaAttribute const* const PGM_def_input_vsc_q_min = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "q_min");
+PGM_MetaAttribute const* const PGM_def_input_vsc_q_max = PGM_meta_get_attribute_by_name(nullptr, "input", "vsc", "q_max");
 // component generic_branch
 PGM_MetaComponent const* const PGM_def_input_generic_branch = PGM_meta_get_component_by_name(nullptr, "input", "generic_branch");
 // attributes of input generic_branch
@@ -937,6 +941,10 @@ PGM_MetaAttribute const* const PGM_def_update_vsc_droop_u_ref = PGM_meta_get_att
 PGM_MetaAttribute const* const PGM_def_update_vsc_loss_a = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "loss_a");
 PGM_MetaAttribute const* const PGM_def_update_vsc_loss_b = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "loss_b");
 PGM_MetaAttribute const* const PGM_def_update_vsc_loss_c = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "loss_c");
+PGM_MetaAttribute const* const PGM_def_update_vsc_control_q = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "control_q");
+PGM_MetaAttribute const* const PGM_def_update_vsc_u_ac_set = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "u_ac_set");
+PGM_MetaAttribute const* const PGM_def_update_vsc_q_min = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "q_min");
+PGM_MetaAttribute const* const PGM_def_update_vsc_q_max = PGM_meta_get_attribute_by_name(nullptr, "update", "vsc", "q_max");
 // component transformer
 PGM_MetaComponent const* const PGM_def_update_transformer = PGM_meta_get_component_by_name(nullptr, "update", "transformer");
 // attributes of update transformer

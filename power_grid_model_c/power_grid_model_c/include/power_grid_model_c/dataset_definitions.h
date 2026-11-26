@@ -126,6 +126,10 @@ PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_loss_a;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_loss_b;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_loss_c;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_sn;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_control_q;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_u_ac_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_q_min;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_input_vsc_q_max;
 // component generic_branch
 PGM_API extern PGM_MetaComponent const* const PGM_def_input_generic_branch;
 // attributes of input generic_branch
@@ -948,6 +952,10 @@ PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_droop_u_ref;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_loss_a;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_loss_b;
 PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_loss_c;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_control_q;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_u_ac_set;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_q_min;
+PGM_API extern PGM_MetaAttribute const* const PGM_def_update_vsc_q_max;
 // component transformer
 PGM_API extern PGM_MetaComponent const* const PGM_def_update_transformer;
 // attributes of update transformer

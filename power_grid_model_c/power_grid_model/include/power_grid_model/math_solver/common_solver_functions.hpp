@@ -26,6 +26,7 @@
 #include <map>
 #include <numeric>
 #include <ranges>
+#include <span>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -416,7 +417,8 @@ template <symmetry_tag sym, typename LoadGenFunc>
 inline void calculate_pf_result(YBus<sym> const& y_bus, PowerFlowInput<sym> const& input,
                                 grouped_idx_vector_type auto const& sources_per_bus,
                                 grouped_idx_vector_type auto const& load_gens_per_bus, SolverOutput<sym>& output,
-                                LoadGenFunc load_gen_func) {
+                                LoadGenFunc load_gen_func,
+                                std::span<ComplexValue<sym> const> bus_injection_correction = {}) {
     assert(sources_per_bus.size() == load_gens_per_bus.size());
 
     auto const& voltage_regulators_per_load_gen = y_bus.math_topology().voltage_regulators_per_load_gen;
@@ -431,6 +433,13 @@ inline void calculate_pf_result(YBus<sym> const& y_bus, PowerFlowInput<sym> cons
     output.voltage_regulator.resize(voltage_regulators_per_load_gen.element_size());
     output.bus_injection.resize(sources_per_bus.size());
     output.bus_injection = y_bus.calculate_injection(output.u);
+    // flows of branches without Y-bus admittance (hybrid VSC converters), which every result below must see
+    if (!bus_injection_correction.empty()) {
+        assert(std::ssize(bus_injection_correction) == std::ssize(output.bus_injection));
+        for (auto&& [injection, correction] : std::views::zip(output.bus_injection, bus_injection_correction)) {
+            injection += correction;
+        }
+    }
 
     std::map<Idx, Idx> loadgen_to_regulator; // save mapping from generator to its regulator
     for (auto const& [load_gen, regulators] : enumerated_zip_sequence(voltage_regulators_per_load_gen)) {

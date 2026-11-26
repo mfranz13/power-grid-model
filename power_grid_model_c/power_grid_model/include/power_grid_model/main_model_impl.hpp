@@ -362,6 +362,7 @@ class MainModelImpl {
 
         if (options.calculation_type == CalculationType::power_flow &&
             options.calculation_method != CalculationMethod::newton_raphson &&
+            options.calculation_method != CalculationMethod::hybrid_newton_raphson &&
             state_.components.template size<VoltageRegulator>() > 0) {
             throw InvalidCalculationMethod{};
         }

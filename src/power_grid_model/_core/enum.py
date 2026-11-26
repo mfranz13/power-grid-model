@@ -86,6 +86,15 @@ class VscControlMode(IntEnum):
     """P-U_dc droop control"""
 
 
+class VscQControlMode(IntEnum):
+    """Fork extension: reactive power control mode of a VSC converter"""
+
+    q = 0
+    """Fixed reactive power setpoint at the AC side"""
+    u_ac = 1
+    """Fixed AC voltage magnitude at the AC node"""
+
+
 class TapChangingStrategy(IntEnum):
     """Tap Changing Strategies"""
 

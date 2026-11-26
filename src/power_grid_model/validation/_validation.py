@@ -41,6 +41,7 @@ from power_grid_model.enum import (
     LoadGenType,
     MeasuredTerminalType,
     VscControlMode,
+    VscQControlMode,
     WindingType,
 )
 from power_grid_model.validation._rules import (
@@ -307,7 +308,6 @@ def validate_required_values(  # noqa: PLR0915
     required[CT.dc_line] = required["branch"] + [AT.r1]
     required[CT.vsc] = required["branch"] + [
         AT.control_p,
-        AT.q_set,
         AT.loss_a,
         AT.loss_b,
         AT.loss_c,
@@ -769,15 +769,20 @@ def validate_vsc(data: SingleDataset) -> list[ValidationError]:
     errors += _all_greater_than_zero(data, CT.vsc, AT.droop_gain)
     errors += _all_greater_than_zero(data, CT.vsc, AT.droop_u_ref)
     errors += _all_greater_than_zero(data, CT.vsc, AT.sn)
-    # mode-dependent required setpoints
+    errors += _all_valid_enum_values(data, CT.vsc, AT.control_q, VscQControlMode)
+    errors += _all_greater_than_zero(data, CT.vsc, AT.u_ac_set)
+    errors += _all_greater_or_equal(data, CT.vsc, AT.q_max, f"{AT.q_min}")
+    # mode-dependent required setpoints; control_q not provided means q control
     vsc = data[CT.vsc]
-    mode_required = {
-        VscControlMode.p: [AT.p_set],
-        VscControlMode.u_dc: [AT.u_dc_set],
-        VscControlMode.droop: [AT.droop_p_set, AT.droop_gain],
-    }
-    for mode, fields in mode_required.items():
-        mask = vsc[AT.control_p] == mode
+    q_control = vsc[AT.control_q] != VscQControlMode.u_ac
+    mode_masks = [
+        (vsc[AT.control_p] == VscControlMode.p, [AT.p_set]),
+        (vsc[AT.control_p] == VscControlMode.u_dc, [AT.u_dc_set]),
+        (vsc[AT.control_p] == VscControlMode.droop, [AT.droop_p_set, AT.droop_gain]),
+        (q_control, [AT.q_set]),
+        (~q_control, [AT.u_ac_set]),
+    ]
+    for mask, fields in mode_masks:
         for field in fields:
             invalid = mask & np.isnan(vsc[field])
             if invalid.any():

@@ -228,6 +228,10 @@ struct VscInput {
     double loss_b{nan};  // IEC 62751-2 loss polynomial coefficients
     double loss_c{nan};  // IEC 62751-2 loss polynomial coefficients
     double sn{nan};  // rated power
+    VscQControlMode control_q{static_cast<VscQControlMode>(na_IntS)};  // reactive power control mode
+    double u_ac_set{nan};  // AC voltage magnitude setpoint for u_ac control mode
+    double q_min{nan};  // reactive power limits for u_ac control mode, from-side branch convention
+    double q_max{nan};  // reactive power limits for u_ac control mode, from-side branch convention
 
     // implicit conversions to BaseInput
     operator BaseInput&() { return reinterpret_cast<BaseInput&>(*this); }

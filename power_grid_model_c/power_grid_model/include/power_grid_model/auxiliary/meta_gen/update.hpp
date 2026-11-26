@@ -66,7 +66,7 @@ struct get_attributes_list<ApplianceUpdate> {
 
 template<>
 struct get_attributes_list<VscUpdate> {
-    static constexpr std::array<MetaAttribute, 13> value{
+    static constexpr std::array<MetaAttribute, 17> value{
             // all attributes including base class
             
             meta_data_gen::get_meta_attribute<&VscUpdate::id>(offsetof(VscUpdate, id), "id"),
@@ -82,6 +82,10 @@ struct get_attributes_list<VscUpdate> {
             meta_data_gen::get_meta_attribute<&VscUpdate::loss_a>(offsetof(VscUpdate, loss_a), "loss_a"),
             meta_data_gen::get_meta_attribute<&VscUpdate::loss_b>(offsetof(VscUpdate, loss_b), "loss_b"),
             meta_data_gen::get_meta_attribute<&VscUpdate::loss_c>(offsetof(VscUpdate, loss_c), "loss_c"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::control_q>(offsetof(VscUpdate, control_q), "control_q"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::u_ac_set>(offsetof(VscUpdate, u_ac_set), "u_ac_set"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::q_min>(offsetof(VscUpdate, q_min), "q_min"),
+            meta_data_gen::get_meta_attribute<&VscUpdate::q_max>(offsetof(VscUpdate, q_max), "q_max"),
     };
 };
 

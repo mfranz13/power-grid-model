@@ -214,7 +214,7 @@ struct get_attributes_list<DcLineInput> {
 
 template<>
 struct get_attributes_list<VscInput> {
-    static constexpr std::array<MetaAttribute, 16> value{
+    static constexpr std::array<MetaAttribute, 20> value{
             // all attributes including base class
             
             meta_data_gen::get_meta_attribute<&VscInput::id>(offsetof(VscInput, id), "id"),
@@ -233,6 +233,10 @@ struct get_attributes_list<VscInput> {
             meta_data_gen::get_meta_attribute<&VscInput::loss_b>(offsetof(VscInput, loss_b), "loss_b"),
             meta_data_gen::get_meta_attribute<&VscInput::loss_c>(offsetof(VscInput, loss_c), "loss_c"),
             meta_data_gen::get_meta_attribute<&VscInput::sn>(offsetof(VscInput, sn), "sn"),
+            meta_data_gen::get_meta_attribute<&VscInput::control_q>(offsetof(VscInput, control_q), "control_q"),
+            meta_data_gen::get_meta_attribute<&VscInput::u_ac_set>(offsetof(VscInput, u_ac_set), "u_ac_set"),
+            meta_data_gen::get_meta_attribute<&VscInput::q_min>(offsetof(VscInput, q_min), "q_min"),
+            meta_data_gen::get_meta_attribute<&VscInput::q_max>(offsetof(VscInput, q_max), "q_max"),
     };
 };
 
