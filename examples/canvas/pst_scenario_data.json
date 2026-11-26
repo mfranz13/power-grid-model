@@ -1,0 +1,47 @@
+[
+ {
+  "tag": "kein Austausch",
+  "theta_deg": -0.36,
+  "ziel": "P ueber PST = 0",
+  "pst_p_from_kW": -4.1,
+  "pst_q_from_kvar": -61.3,
+  "pst_p_to_kW": 4.2,
+  "pst_q_to_kvar": 61.4,
+  "pst_loading_pct": 0.6,
+  "src_kW": [811.0, -481.4],
+  "trafo_loading_pct": [3.2, 2.0],
+  "u_kv_n3n4": [20.002, 20.014],
+  "delta_deg": -0.36,
+  "line_p_from_kW": [801.0, -499.6]
+ },
+ {
+  "tag": "Referenz",
+  "theta_deg": 0.0,
+  "ziel": null,
+  "pst_p_from_kW": -321.5,
+  "pst_q_from_kvar": -51.9,
+  "pst_p_to_kW": 321.6,
+  "pst_q_to_kvar": 53.0,
+  "pst_loading_pct": 3.3,
+  "src_kW": [493.5, -164.0],
+  "trafo_loading_pct": [2.0, 0.9],
+  "u_kv_n3n4": [20.002, 20.014],
+  "delta_deg": -0.18,
+  "line_p_from_kW": [801.0, -499.6]
+ },
+ {
+  "tag": "Slack A entlastet",
+  "theta_deg": 0.56,
+  "ziel": "P von Slack A = 0",
+  "pst_p_from_kW": -815.2,
+  "pst_q_from_kvar": -35.2,
+  "pst_p_to_kW": 815.3,
+  "pst_q_to_kvar": 41.9,
+  "pst_loading_pct": 8.2,
+  "src_kW": [-0.2, 329.8],
+  "trafo_loading_pct": [0.1, 1.4],
+  "u_kv_n3n4": [20.002, 20.013],
+  "delta_deg": 0.09,
+  "line_p_from_kW": [801.0, -499.6]
+ }
+]

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 1280 760" width="1280" height="760" xmlns="http://www.w3.org/2000/svg">
+  <style>text{font-family:"IBM Plex Sans","Segoe UI",system-ui,sans-serif}.mono{font-family:"IBM Plex Mono",ui-monospace,"Cascadia Mono",monospace}</style><defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"></stop>
+      <stop offset="0.55" stop-color="#f9f9f7"></stop>
+      <stop offset="1" stop-color="#f2f2f0"></stop>
+    </linearGradient>
+    <linearGradient id="dcg" gradientUnits="userSpaceOnUse" x1="440" y1="344" x2="840" y2="344">
+      <stop offset="0" stop-color="#4f46e5"></stop>
+      <stop offset="1" stop-color="#7c3aed"></stop>
+    </linearGradient>
+    <linearGradient id="cardg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"></stop>
+      <stop offset="1" stop-color="#f5f5fa"></stop>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1280" height="760" fill="url(#bg)"></rect>
+
+  <text x="40" y="58" font-size="26" font-weight="600" fill="#111827">Hybrid-AC/DC-Beispielnetz</text>
+  <text x="40" y="86" font-size="14" fill="#6b7280">Zwei asynchrone 110-kV-Inseln, gekoppelt über einen 33-kV-DC-Link · examples/hybrid_dc_link.py</text>
+
+  <!-- ===================== Insel A ===================== -->
+  <rect x="228" y="116" width="44" height="44" fill="none" stroke="#1f2937" stroke-width="1.75"></rect>
+  <line x1="228" y1="149" x2="261" y2="116" stroke="#1f2937" stroke-width="1.25"></line>
+  <line x1="228" y1="160" x2="272" y2="116" stroke="#1f2937" stroke-width="1.25"></line>
+  <line x1="239" y1="160" x2="272" y2="127" stroke="#1f2937" stroke-width="1.25"></line>
+  <text x="284" y="134" font-size="13" font-weight="600" fill="#1f2937">Slack A</text>
+  <text x="284" y="152" font-size="12" fill="#6b7280">u_ref 1,0 pu</text>
+  <line x1="250" y1="160" x2="250" y2="196" stroke="#1f2937" stroke-width="1.75"></line>
+  <line x1="160" y1="196" x2="340" y2="196" stroke="#1f2937" stroke-width="5"></line>
+  <text x="150" y="200" font-size="13" font-weight="600" text-anchor="end" fill="#1f2937">Knoten 1 · 110 kV</text>
+  <line x1="250" y1="196" x2="250" y2="223" stroke="#1f2937" stroke-width="1.75"></line>
+  <circle cx="250" cy="246" r="23" fill="none" stroke="#1f2937" stroke-width="1.75"></circle>
+  <circle cx="250" cy="280" r="23" fill="none" stroke="#1f2937" stroke-width="1.75"></circle>
+  <text x="292" y="258" font-size="13" font-weight="600" fill="#1f2937">Trafo 21</text>
+  <text x="292" y="275" font-size="12" fill="#6b7280">25 MVA 110/20 kV · YNd5</text>
+  <line x1="250" y1="303" x2="250" y2="344" stroke="#1f2937" stroke-width="1.75"></line>
+  <line x1="160" y1="344" x2="340" y2="344" stroke="#1f2937" stroke-width="5"></line>
+  <text x="150" y="336" font-size="13" font-weight="600" text-anchor="end" fill="#1f2937">Knoten 3 · 20 kV</text>
+  <line x1="210" y1="344" x2="210" y2="560" stroke="#1f2937" stroke-width="1.75"></line>
+  <text x="198" y="436" font-size="13" font-weight="600" text-anchor="end" fill="#1f2937">Leitung 31</text>
+  <text x="198" y="453" font-size="12" fill="#6b7280" text-anchor="end">NA2XS2Y 1x240 RM/25</text>
+  <text x="198" y="470" font-size="12" fill="#6b7280" text-anchor="end">5 km · 421 A</text>
+  <line x1="120" y1="560" x2="300" y2="560" stroke="#1f2937" stroke-width="5"></line>
+  <text x="110" y="564" font-size="13" font-weight="600" text-anchor="end" fill="#1f2937">Knoten 5 · 20 kV</text>
+  <line x1="210" y1="560" x2="210" y2="612" stroke="#1f2937" stroke-width="1.75"></line>
+  <path d="M 202 612 L 218 612 L 210 628 Z" fill="#1f2937"></path>
+  <text x="228" y="610" font-size="13" font-weight="600" fill="#1f2937">Last</text>
+  <text x="228" y="627" font-size="12" fill="#6b7280">800 kW · 200 kvar</text>
+
+  <!-- ===================== Insel B ===================== -->
+  <rect x="1008" y="116" width="44" height="44" fill="none" stroke="#1f2937" stroke-width="1.75"></rect>
+  <line x1="1008" y1="149" x2="1041" y2="116" stroke="#1f2937" stroke-width="1.25"></line>
+  <line x1="1008" y1="160" x2="1052" y2="116" stroke="#1f2937" stroke-width="1.25"></line>
+  <line x1="1019" y1="160" x2="1052" y2="127" stroke="#1f2937" stroke-width="1.25"></line>
+  <text x="996" y="134" font-size="13" font-weight="600" text-anchor="end" fill="#1f2937">Slack B</text>
+  <text x="996" y="152" font-size="12" fill="#6b7280" text-anchor="end">u_ref 1,0 pu</text>
+  <line x1="1030" y1="160" x2="1030" y2="196" stroke="#1f2937" stroke-width="1.75"></line>
+  <line x1="940" y1="196" x2="1120" y2="196" stroke="#1f2937" stroke-width="5"></line>
+  <text x="1130" y="200" font-size="13" font-weight="600" fill="#1f2937">Knoten 2 · 110 kV</text>
+  <line x1="1030" y1="196" x2="1030" y2="223" stroke="#1f2937" stroke-width="1.75"></line>
+  <circle cx="1030" cy="246" r="23" fill="none" stroke="#1f2937" stroke-width="1.75"></circle>
+  <circle cx="1030" cy="280" r="23" fill="none" stroke="#1f2937" stroke-width="1.75"></circle>
+  <text x="988" y="258" font-size="13" font-weight="600" text-anchor="end" fill="#1f2937">Trafo 22</text>
+  <text x="988" y="275" font-size="12" fill="#6b7280" text-anchor="end">25 MVA 110/20 kV · YNd5</text>
+  <line x1="1030" y1="303" x2="1030" y2="344" stroke="#1f2937" stroke-width="1.75"></line>
+  <line x1="940" y1="344" x2="1120" y2="344" stroke="#1f2937" stroke-width="5"></line>
+  <text x="1130" y="336" font-size="13" font-weight="600" fill="#1f2937">Knoten 4 · 20 kV</text>
+  <line x1="1070" y1="344" x2="1070" y2="560" stroke="#1f2937" stroke-width="1.75"></line>
+  <text x="1082" y="436" font-size="13" font-weight="600" fill="#1f2937">Leitung 32</text>
+  <text x="1082" y="453" font-size="12" fill="#6b7280">NA2XS2Y 1x240 RM/25</text>
+  <text x="1082" y="470" font-size="12" fill="#6b7280">5 km · 421 A</text>
+  <line x1="980" y1="560" x2="1160" y2="560" stroke="#1f2937" stroke-width="5"></line>
+  <text x="1170" y="564" font-size="13" font-weight="600" fill="#1f2937">Knoten 6 · 20 kV</text>
+  <line x1="1070" y1="560" x2="1070" y2="600" stroke="#1f2937" stroke-width="1.75"></line>
+  <circle cx="1070" cy="626" r="26" fill="none" stroke="#1f2937" stroke-width="1.75"></circle>
+  <text x="1070" y="623" font-size="14" font-weight="600" text-anchor="middle" fill="#1f2937">G</text>
+  <path d="M 1060 632 q 5 -7 10 0 q 5 7 10 0" fill="none" stroke="#1f2937" stroke-width="1.5"></path>
+  <text x="1108" y="622" font-size="13" font-weight="600" fill="#1f2937">Erzeugung</text>
+  <text x="1108" y="639" font-size="12" fill="#6b7280">500 kW</text>
+
+  <!-- ===================== DC-Link ===================== -->
+  <line x1="340" y1="344" x2="440" y2="344" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"></line>
+  <circle cx="340" cy="344" r="3" fill="#1f2937"></circle>
+  <rect x="440" y="312" width="64" height="64" fill="#eef2ff" stroke="#1f2937" stroke-width="1.75"></rect>
+  <line x1="504" y1="312" x2="440" y2="376" stroke="#1f2937" stroke-width="1.25"></line>
+  <path d="M 450 336 q 5 -7 10 0 q 5 7 10 0" fill="none" stroke="#1f2937" stroke-width="1.5"></path>
+  <line x1="478" y1="358" x2="496" y2="358" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <line x1="478" y1="364" x2="496" y2="364" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <text x="472" y="298" font-size="13" font-weight="600" text-anchor="middle" fill="#111827">VSC 71</text>
+  <line x1="504" y1="344" x2="560" y2="344" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <line x1="560" y1="328" x2="560" y2="360" stroke="#6d28d9" stroke-width="5"></line>
+  <text x="560" y="316" font-size="12" font-weight="600" text-anchor="middle" fill="#4f46e5">61</text>
+  <line x1="560" y1="338" x2="720" y2="338" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <line x1="560" y1="350" x2="720" y2="350" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <text x="640" y="374" font-size="13" font-weight="600" text-anchor="middle" fill="#4f46e5">dc_line 63 · 33 kV</text>
+  <text x="640" y="391" font-size="12" text-anchor="middle" fill="#6b7280">NA2XS2Y 1x240 RM/25 · 2 km</text>
+  <text x="640" y="408" font-size="12" text-anchor="middle" fill="#6b7280">2 Leiter · 0,49 Ω · 421 A</text>
+  <line x1="720" y1="328" x2="720" y2="360" stroke="#6d28d9" stroke-width="5"></line>
+  <text x="720" y="316" font-size="12" font-weight="600" text-anchor="middle" fill="#4f46e5">62</text>
+  <line x1="720" y1="344" x2="776" y2="344" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <rect x="776" y="312" width="64" height="64" fill="#eef2ff" stroke="#1f2937" stroke-width="1.75"></rect>
+  <line x1="776" y1="312" x2="840" y2="376" stroke="#1f2937" stroke-width="1.25"></line>
+  <line x1="784" y1="358" x2="802" y2="358" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <line x1="784" y1="364" x2="802" y2="364" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <path d="M 810 336 q 5 -7 10 0 q 5 7 10 0" fill="none" stroke="#1f2937" stroke-width="1.5"></path>
+  <text x="808" y="298" font-size="13" font-weight="600" text-anchor="middle" fill="#111827">VSC 72</text>
+  <line x1="840" y1="344" x2="940" y2="344" stroke="#1f2937" stroke-width="2.5" stroke-linecap="round"></line>
+  <circle cx="940" cy="344" r="3" fill="#1f2937"></circle>
+
+  <!-- Regelungs-Karten: beide geregelten Groessen je Konverter -->
+  <line x1="472" y1="376" x2="472" y2="424" stroke="#0d9488" stroke-width="1" stroke-dasharray="3 4" opacity="0.6"></line>
+  <rect x="388" y="424" width="176" height="110" rx="10" fill="url(#cardg)" stroke="#e5e7eb" stroke-width="1"></rect>
+  <text x="402" y="448" font-size="12" font-weight="600" fill="#1f2937">VSC 71 · Regelung</text>
+  <text x="552" y="448" font-size="9.5" text-anchor="end" fill="#0d9488" letter-spacing="1">VORGABE</text>
+  <rect x="402" y="460" width="148" height="26" rx="8" fill="#0d9488" fill-opacity="0.08" stroke="#0d9488" stroke-opacity="0.45" stroke-width="1"></rect>
+  <text x="411" y="477" font-size="11.5" fill="#0f766e">P-Kanal: u_dc = 33 kV</text>
+  <rect x="402" y="494" width="148" height="26" rx="8" fill="#0d9488" fill-opacity="0.08" stroke="#0d9488" stroke-opacity="0.45" stroke-width="1"></rect>
+  <text x="411" y="511" font-size="11.5" fill="#0f766e">Q-Kanal: q = −100 kvar</text>
+
+  <line x1="808" y1="376" x2="808" y2="424" stroke="#0d9488" stroke-width="1" stroke-dasharray="3 4" opacity="0.6"></line>
+  <rect x="724" y="424" width="176" height="110" rx="10" fill="url(#cardg)" stroke="#e5e7eb" stroke-width="1"></rect>
+  <text x="738" y="448" font-size="12" font-weight="600" fill="#1f2937">VSC 72 · Regelung</text>
+  <text x="888" y="448" font-size="9.5" text-anchor="end" fill="#0d9488" letter-spacing="1">VORGABE</text>
+  <rect x="738" y="460" width="148" height="26" rx="8" fill="#0d9488" fill-opacity="0.08" stroke="#0d9488" stroke-opacity="0.45" stroke-width="1"></rect>
+  <text x="747" y="477" font-size="11.5" fill="#0f766e">P-Kanal: p = +300 kW</text>
+  <rect x="738" y="494" width="148" height="26" rx="8" fill="#0d9488" fill-opacity="0.08" stroke="#0d9488" stroke-opacity="0.45" stroke-width="1"></rect>
+  <text x="747" y="511" font-size="11.5" fill="#0f766e">Q-Kanal: q = 0 kvar</text>
+
+  <!-- Legende -->
+  <line x1="40" y1="712" x2="90" y2="712" stroke="#1f2937" stroke-width="1.75"></line>
+  <text x="100" y="716" font-size="12" fill="#6b7280">AC</text>
+  <line x1="140" y1="708" x2="190" y2="708" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <line x1="140" y1="716" x2="190" y2="716" stroke="url(#dcg)" stroke-width="1.75"></line>
+  <text x="200" y="716" font-size="12" fill="#6b7280">DC · 33 kV</text>
+  <rect x="286" y="700" width="82" height="24" rx="8" fill="#0d9488" fill-opacity="0.08" stroke="#0d9488" stroke-opacity="0.45" stroke-width="1"></rect>
+  <text x="298" y="716" font-size="11.5" fill="#0f766e">Vorgabe</text>
+  <text x="392" y="716" font-size="12" fill="#111827" class="mono">123,4 kW</text>
+  <text x="466" y="716" font-size="12" fill="#6b7280">= Ergebnis (berechnet, siehe Szenario-Tafeln)</text>
+  <text x="1240" y="716" font-size="12" fill="#6b7280" text-anchor="end" class="mono">M = U_AC / (K_MOD · U_dc) ≈ 0,99</text>
+</svg>

@@ -1,0 +1,102 @@
+{
+  "pages": [
+    { "id": "page-dc", "name": "Hybrid DC-Link" },
+    { "id": "page-pst", "name": "Phasenschieber" }
+  ],
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 760,
+      "title": "Einpoliges Schaltbild",
+      "page": "page-dc"
+    },
+    {
+      "file": "SetpointMinus600.dc.html",
+      "x": 0,
+      "y": 880,
+      "w": 680,
+      "h": 690,
+      "title": "p_set = −600 kW",
+      "page": "page-dc"
+    },
+    {
+      "file": "SetpointNull.dc.html",
+      "x": 770,
+      "y": 880,
+      "w": 680,
+      "h": 690,
+      "title": "p_set = 0 kW",
+      "page": "page-dc"
+    },
+    {
+      "file": "SetpointPlus600.dc.html",
+      "x": 0,
+      "y": 1690,
+      "w": 680,
+      "h": 690,
+      "title": "p_set = +600 kW",
+      "page": "page-dc"
+    },
+    {
+      "file": "SetpointDroop.dc.html",
+      "x": 770,
+      "y": 1690,
+      "w": 680,
+      "h": 690,
+      "title": "Droop 100:50",
+      "page": "page-dc"
+    },
+    {
+      "file": "PstMain.dc.html",
+      "x": 0,
+      "y": 0,
+      "w": 1280,
+      "h": 760,
+      "title": "Einpoliges Schaltbild (PST)",
+      "page": "page-pst"
+    },
+    {
+      "file": "PstNullfluss.dc.html",
+      "x": 0,
+      "y": 880,
+      "w": 680,
+      "h": 690,
+      "title": "Kein Austausch (θ = −0,36°)",
+      "page": "page-pst"
+    },
+    {
+      "file": "PstEntlastung.dc.html",
+      "x": 770,
+      "y": 880,
+      "w": 680,
+      "h": 690,
+      "title": "Slack A entlastet (θ = +0,56°)",
+      "page": "page-pst"
+    }
+  ],
+  "annotations": [
+    {
+      "id": "szenarien",
+      "x": 1370,
+      "y": 40,
+      "w": 300,
+      "text": "Lesehilfe: Cyan-Chips = Vorgaben (je Konverter zwei geregelte Größen: P-Kanal und Q-Kanal). Mono-Ziffern = berechnete Ergebnisse (hybrid_newton_raphson), Pfeile = tatsächliche Flussrichtung.\n\nBetriebsmittel nach pandapower-std_types: NA2XS2Y 1x240 RM/25 (5 km), 25 MVA 110/20 kV (YNd5).",
+      "page": "page-dc"
+    },
+    {
+      "id": "pst-lesehilfe",
+      "x": 1370,
+      "y": 40,
+      "w": 300,
+      "text": "Lesehilfe: Ein Phasenschiebertransformator (PST) verschiebt den Spannungswinkel zwischen Knoten 3 und 4 um θ und steuert damit den Wirkleistungsfluss zwischen den beiden Netzteilen.\n\nAnders als beim DC-Link bleiben beide Gebiete ein gemeinsames, synchron gekoppeltes AC-Netz. Der PST lenkt den Fluss nur, er gibt ihn nicht vor: kein p_set, und bei geänderter Topologie stellt sich bei gleichem θ ein anderer Fluss ein.\n\nDer PST liegt in einer Masche, die sich über beide 110-kV-Netze schließt. Sein Winkel treibt deshalb einen Transitfluss von rund 0,88 MW pro Grad, der nicht durch Last und Erzeugung begrenzt ist. Leitung 31 (801 kW) und Leitung 32 (−500 kW) bleiben in allen Szenarien unverändert.\n\nVorzeichenkonvention: positives θ treibt Wirkleistung von Knoten 4 nach Knoten 3 (P_from am PST wird negativer). Bei θ = 0° fließen bereits rund 322 kW von B nach A, weil die Erzeugung in Insel B einen Teil der Last in Insel A über den PST deckt.\n\nModelliert als generic_branch 80: k = 1, sn = 10 MVA, uk = 10 %.",
+      "page": "page-pst"
+    }
+  ],
+  "launch": {
+    "view": "canvas",
+    "page": "page-pst"
+  }
+}
