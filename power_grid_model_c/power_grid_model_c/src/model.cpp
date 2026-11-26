@@ -6,8 +6,11 @@
 #include "forward_declarations.hpp"
 #include "handle.hpp"
 #include "input_sanitization.hpp"
+#include "logger.hpp"
+#include "logger_fwd.hpp"
 #include "math_solver.hpp"
-#include "options.hpp" // NOLINT(misc-include-cleaner)
+
+#include "options_utils.hpp" // NOLINT(misc-include-cleaner)
 #include "safe_memory_handling.hpp"
 
 #include "power_grid_model_c/basics.h"
@@ -15,8 +18,9 @@
 
 #include <power_grid_model/auxiliary/dataset.hpp>
 #include <power_grid_model/common/common.hpp>
-#include <power_grid_model/common/enum.hpp>
 #include <power_grid_model/common/exception.hpp>
+#include <power_grid_model/common/logging.hpp>
+#include <power_grid_model/common/timer.hpp>
 #include <power_grid_model/main_model.hpp>
 #include <power_grid_model/main_model_fwd.hpp>
 
@@ -24,9 +28,11 @@
 #include <cassert>
 #include <concepts>
 #include <exception>
+#include <memory>
 #include <ranges>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace {
 using namespace power_grid_model;
@@ -36,34 +42,53 @@ using power_grid_model_c::cast_to_c;
 using power_grid_model_c::cast_to_cpp;
 using power_grid_model_c::create;
 using power_grid_model_c::destroy;
+using power_grid_model_c::get_calculation_initialization;
+using power_grid_model_c::get_calculation_method;
+using power_grid_model_c::get_calculation_symmetry;
+using power_grid_model_c::get_calculation_type;
+using power_grid_model_c::get_logger;
 using power_grid_model_c::get_math_solver_dispatcher;
-using power_grid_model_c::safe_enum;
+using power_grid_model_c::get_optimizer_strategy;
+using power_grid_model_c::get_optimizer_type;
+using power_grid_model_c::get_short_circuit_voltage_scaling;
 using power_grid_model_c::safe_ptr;
 using power_grid_model_c::safe_ptr_get;
 using power_grid_model_c::safe_ptr_maybe_nullptr;
 using power_grid_model_c::safe_str_view;
+using power_grid_model_c::ScopedModuleLogger;
 } // namespace
 
 // create model
 PGM_PowerGridModel* PGM_create_model(PGM_Handle* handle, double system_frequency,
                                      PGM_ConstDataset const* input_dataset) noexcept {
-    return call_with_catch(handle, [system_frequency, input_dataset] {
-        return cast_to_c(create<MainModel>(system_frequency, safe_ptr_get(cast_to_cpp(input_dataset)),
-                                           get_math_solver_dispatcher(), 0));
+    return call_with_catch(handle, [system_frequency, input_dataset, handle] {
+        auto& logger = get_logger(safe_ptr_get(handle).logger);
+        Timer const total_timer{logger, LogEvent::total};
+        Timer const initialization_timer{logger, LogEvent::build_model};
+        auto model = std::unique_ptr<MainModel>{create<MainModel>(
+            system_frequency, safe_ptr_get(cast_to_cpp(input_dataset)), get_math_solver_dispatcher(), 0, logger)};
+        model->reset_logger();
+        return cast_to_c(model.release());
     });
 }
 
 // update model
 void PGM_update_model(PGM_Handle* handle, PGM_PowerGridModel* model, PGM_ConstDataset const* update_dataset) noexcept {
-    call_with_catch(handle, [model, update_dataset] {
-        safe_ptr_get(cast_to_cpp(model))
-            .update_components<permanent_update_t>(safe_ptr_get(cast_to_cpp(update_dataset)));
+    call_with_catch(handle, [handle, model, update_dataset] {
+        auto& cpp_model = safe_ptr_get(cast_to_cpp(model));
+        ScopedModuleLogger const logger_guard{cpp_model, get_logger(safe_ptr_get(handle).logger)};
+        cpp_model.update_components<permanent_update_t>(safe_ptr_get(cast_to_cpp(update_dataset)));
     });
 }
 
 // copy model
 PGM_PowerGridModel* PGM_copy_model(PGM_Handle* handle, PGM_PowerGridModel const* model) noexcept {
-    return call_with_catch(handle, [model] { return cast_to_c(create<MainModel>(safe_ptr_get(cast_to_cpp(model)))); });
+    return call_with_catch(handle, [model, handle] {
+        auto& logger = get_logger(safe_ptr_get(handle).logger);
+        auto copied_model = std::unique_ptr<MainModel>{create<MainModel>(safe_ptr_get(cast_to_cpp(model)), logger)};
+        copied_model->reset_logger();
+        return cast_to_c(copied_model.release());
+    });
 }
 
 // get indexer
@@ -115,61 +140,6 @@ void check_calculate_valid_options(PGM_Options const& opt) {
     }
 }
 
-constexpr auto get_calculation_type(PGM_Options const& opt) { return safe_enum<CalculationType>(opt.calculation_type); }
-
-constexpr auto get_calculation_symmetry(PGM_Options const& opt) {
-    switch (opt.symmetric) {
-    case PGM_asymmetric:
-        return CalculationSymmetry::asymmetric;
-    case PGM_symmetric:
-        return CalculationSymmetry::symmetric;
-    default:
-        throw MissingCaseForEnumError{"get_calculation_symmetry", opt.tap_changing_strategy};
-    }
-}
-
-constexpr auto get_calculation_method(PGM_Options const& opt) {
-    return safe_enum<CalculationMethod>(opt.calculation_method);
-}
-
-constexpr auto get_optimizer_type(PGM_Options const& opt) {
-    using enum OptimizerType;
-
-    switch (opt.tap_changing_strategy) {
-    case PGM_tap_changing_strategy_disabled:
-        return no_optimization;
-    case PGM_tap_changing_strategy_any_valid_tap:
-    case PGM_tap_changing_strategy_max_voltage_tap:
-    case PGM_tap_changing_strategy_min_voltage_tap:
-    case PGM_tap_changing_strategy_fast_any_tap:
-        return automatic_tap_adjustment;
-    default:
-        throw MissingCaseForEnumError{"get_optimizer_type", opt.tap_changing_strategy};
-    }
-}
-
-constexpr auto get_optimizer_strategy(PGM_Options const& opt) {
-    using enum OptimizerStrategy;
-
-    switch (opt.tap_changing_strategy) {
-    case PGM_tap_changing_strategy_disabled:
-    case PGM_tap_changing_strategy_any_valid_tap:
-        return any;
-    case PGM_tap_changing_strategy_max_voltage_tap:
-        return global_maximum;
-    case PGM_tap_changing_strategy_min_voltage_tap:
-        return global_minimum;
-    case PGM_tap_changing_strategy_fast_any_tap:
-        return fast_any;
-    default:
-        throw MissingCaseForEnumError{"get_optimizer_strategy", opt.tap_changing_strategy};
-    }
-}
-
-constexpr auto get_short_circuit_voltage_scaling(PGM_Options const& opt) {
-    return safe_enum<ShortCircuitVoltageScaling>(opt.short_circuit_voltage_scaling);
-}
-
 constexpr auto extract_calculation_options(PGM_Options const& opt) {
     return MainModel::Options{.calculation_type = get_calculation_type(opt),
                               .calculation_symmetry = get_calculation_symmetry(opt),
@@ -179,7 +149,8 @@ constexpr auto extract_calculation_options(PGM_Options const& opt) {
                               .err_tol = opt.err_tol,
                               .max_iter = opt.max_iter,
                               .threading = opt.threading,
-                              .short_circuit_voltage_scaling = get_short_circuit_voltage_scaling(opt)};
+                              .short_circuit_voltage_scaling = get_short_circuit_voltage_scaling(opt),
+                              .calculation_initialization = get_calculation_initialization(opt)};
 }
 
 class BadCalculationRequest : public PowerGridError {
@@ -251,7 +222,7 @@ class MDBatchExceptionHandler : public power_grid_model_c::DefaultExceptionHandl
             append_range(handle.batch_errs, by_ref(ex.err_msgs()));
         } catch (std::exception const& ex) {
             handle_regular_error(handle, ex, PGM_batch_error);
-            append_range(handle.failed_scenarios, IdxRange{stride_size_});
+            append_range(handle.failed_scenarios, std::views::iota(scenario_offset_, scenario_offset_ + stride_size_));
             append_range(handle.batch_errs, std::views::repeat(ex.what(), stride_size_));
         } catch (...) { // NOSONAR(S2738)
             handle_unkown_error(handle);
@@ -305,31 +276,33 @@ void calculate_multi_dimensional_impl(MainModel& model, MainModel::Options const
 
     // loop over the first dimension batch
     for (Idx i = 0; i < first_batch_size; ++i) {
-        // a new handle
-        call_with_catch(
-            &local_handle,
-            [&model, &options, &output_dataset, &safe_batch_dataset, i, stride_size] {
-                // create sliced datasets for the rest of dimensions
-                ConstDataset const single_update_dataset = safe_batch_dataset.get_individual_scenario(i);
-                MutableDataset const sliced_output_dataset =
-                    output_dataset.get_slice_scenario(i * stride_size, (i + 1) * stride_size);
+        // not call_with_catch: it resets the handle, which would erase the failures of the previous passes
+        try {
+            // create sliced datasets for the rest of dimensions
+            ConstDataset const single_update_dataset = safe_batch_dataset.get_individual_scenario(i);
+            MutableDataset const sliced_output_dataset =
+                output_dataset.get_slice_scenario(i * stride_size, (i + 1) * stride_size);
 
-                // create a model copy
-                MainModel local_model{model};
+            // create a model copy
+            MainModel local_model{model};
 
-                // apply the update
-                local_model.update_components<permanent_update_t>(single_update_dataset);
+            // apply the update
+            local_model.update_components<permanent_update_t>(single_update_dataset);
 
-                // recursive call
-                calculate_multi_dimensional_impl(local_model, options, sliced_output_dataset,
-                                                 safe_batch_dataset.get_next_cartesian_product_dimension());
-            },
-            MDBatchExceptionHandler{i * stride_size, stride_size});
+            // recursive call
+            calculate_multi_dimensional_impl(local_model, options, sliced_output_dataset,
+                                             safe_batch_dataset.get_next_cartesian_product_dimension());
+        } catch (...) { // NOSONAR(S2738)
+            MDBatchExceptionHandler{i * stride_size, stride_size}(local_handle);
+        }
     }
 
     if (local_handle.err_code != PGM_no_error) {
-        throw BatchCalculationError{std::move(local_handle.err_msg), std::move(local_handle.failed_scenarios),
-                                    std::move(local_handle.batch_errs)};
+        throw BatchCalculationError{
+            std::move(local_handle.err_msg),
+            std::move(local_handle.failed_scenarios),
+            {}, // TODO(mgovers): temporary solution until we have the actual error codes in #1635
+            std::move(local_handle.batch_errs)};
     }
 }
 
@@ -350,9 +323,13 @@ void PGM_calculate(PGM_Handle* handle, PGM_PowerGridModel* model, PGM_Options co
                    PGM_MutableDataset const* output_dataset, PGM_ConstDataset const* batch_dataset) noexcept {
     call_with_catch(
         handle,
-        [model, opt, output_dataset, batch_dataset] {
-            calculate_impl(safe_ptr_get(cast_to_cpp(model)), safe_ptr_get(opt),
-                           safe_ptr_get(cast_to_cpp(output_dataset)),
+        [handle, model, opt, output_dataset, batch_dataset] {
+            auto& cpp_model = safe_ptr_get(cast_to_cpp(model));
+            auto& logger = get_logger(safe_ptr_get(handle).logger);
+            Timer const timer{logger, LogEvent::total};
+            // Log to the handle passed to this call, not the handle the model was created with.
+            ScopedModuleLogger const logger_guard{cpp_model, logger};
+            calculate_impl(cpp_model, safe_ptr_get(opt), safe_ptr_get(cast_to_cpp(output_dataset)),
                            safe_ptr_maybe_nullptr(cast_to_cpp(batch_dataset)));
         },
         batch_exception_handler);

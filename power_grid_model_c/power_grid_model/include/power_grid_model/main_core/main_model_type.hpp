@@ -72,7 +72,20 @@ concept validate_component_types_c =
     dependent_type_check<CompList, Fault, Node> &&                                                         //
     dependent_type_check<CompList, VoltageRegulator, SymGenerator, AsymGenerator, SymLoad, AsymLoad> &&    //
     dependent_type_check<CompList, DcLine, DcNode> &&                                                      //
-    dependent_type_check<CompList, Vsc, Node, DcNode>;
+    dependent_type_check<CompList, Vsc, Node, DcNode> &&                                                 //
+    // We ensure that certain components are registered before others in the component list
+    // This is because it affects the sequence of offsets at certain places in the code.
+    // Specifically pseudo branches are registered after actual branches.
+    before_in_list_c<CompList, Line, Link> &&                           //
+    before_in_list_c<CompList, Transformer, Link> &&                    //
+    before_in_list_c<CompList, AsymLine, Link> &&                       //
+    before_in_list_c<CompList, GenericBranch, Link> &&                  //
+    before_in_list_c<CompList, Line, ThreeWindingTransformer> &&        //
+    before_in_list_c<CompList, Transformer, ThreeWindingTransformer> && //
+    before_in_list_c<CompList, AsymLine, ThreeWindingTransformer> &&    //
+    before_in_list_c<CompList, GenericBranch, ThreeWindingTransformer> && //
+    before_in_list_c<CompList, DcLine, Link> &&                         //
+    before_in_list_c<CompList, Vsc, Link>;                              //
 } // namespace detail
 
 template <class T, class U> class MainModelType;

@@ -123,11 +123,8 @@ class MainModelImpl {
 
     void add_components(ConstDataset const& input_data, Idx pos = 0) {
         auto const add_func = [this, pos, &input_data]<typename CT>() {
-            if (input_data.is_columnar(CT::name)) {
-                this->add_component<CT>(input_data.get_columnar_buffer_span<meta_data::input_getter_s, CT>(pos));
-            } else {
-                this->add_component<CT>(input_data.get_buffer_span<meta_data::input_getter_s, CT>(pos));
-            }
+            input_data.for_each_component<meta_data::input_getter_s, CT>(
+                [this](auto const& span) { this->add_component<CT>(span); }, pos);
         };
         ModelType::run_functor_with_all_component_types_return_void(add_func);
     }
@@ -166,13 +163,9 @@ class MainModelImpl {
         assert(construction_complete_);
         assert(update_data.get_description().dataset->name == std::string_view("update"));
 
-        if (update_data.is_columnar(CompType::name)) {
-            this->update_component<CompType, CacheType>(
-                update_data.get_columnar_buffer_span<meta_data::update_getter_s, CompType>(pos), sequence_idx);
-        } else {
-            this->update_component<CompType, CacheType>(
-                update_data.get_buffer_span<meta_data::update_getter_s, CompType>(pos), sequence_idx);
-        }
+        update_data.for_each_component<meta_data::update_getter_s, CompType>(
+            [this, sequence_idx](auto const& span) { this->update_component<CompType, CacheType>(span, sequence_idx); },
+            pos);
     }
 
   public:
@@ -207,9 +200,16 @@ class MainModelImpl {
         construction_complete_ = true;
 #endif // !NDEBUG
         state_.components.set_construction_complete();
+        // TODO(jguo): cleanup v2 node single link registration path
+        has_node_injection_sensors_ = detect_node_injection_sensors();
+        state_.comp_topo = std::make_shared<ComponentTopology const>(
+            main_core::construct_topology<ModelType>(state_.components, has_node_injection_sensors_));
+    }
 
-        state_.comp_topo =
-            std::make_shared<ComponentTopology const>(main_core::construct_topology<ModelType>(state_.components));
+    bool detect_node_injection_sensors() const {
+        return std::ranges::any_of(
+            state_.components.template citer<GenericPowerSensor>(),
+            [](GenericPowerSensor const& sensor) { return sensor.get_terminal_type() == MeasuredTerminalType::node; });
     }
 
   public:
@@ -412,8 +412,13 @@ class MainModelImpl {
         auto const regulator_has_q_limits = [](auto const& regulator) {
             return !is_nan(regulator.q_min()) || !is_nan(regulator.q_max());
         };
-        auto const regulator_update_has_q_limits = [](VoltageRegulatorUpdate const& regulator) {
-            return !is_nan(regulator.q_min) || !is_nan(regulator.q_max);
+        auto const has_valid_value = [](auto const& values) {
+            return std::ranges::any_of(values, [](double value) { return !is_nan(value); });
+        };
+
+        auto const regulator_update_has_q_limits = [&has_valid_value](auto const& span) {
+            return has_valid_value(meta_data::get_attribute_span(span, &VoltageRegulatorUpdate::q_min, "q_min")) ||
+                   has_valid_value(meta_data::get_attribute_span(span, &VoltageRegulatorUpdate::q_max, "q_max"));
         };
 
         bool const state_has_q_limits =
@@ -421,9 +426,7 @@ class MainModelImpl {
 
         bool const batch_has_q_limits =
             batch_dataset != nullptr && batch_dataset->for_each_component<meta_data::update_getter_s, VoltageRegulator>(
-                                            [&regulator_update_has_q_limits](auto const& span) {
-                                                return std::ranges::any_of(span, regulator_update_has_q_limits);
-                                            });
+                                            regulator_update_has_q_limits);
 
         if (is_asymmetric_power_flow && (state_has_q_limits || batch_has_q_limits)) {
             throw ExperimentalFeature{
@@ -482,6 +485,7 @@ class MainModelImpl {
 
     OwnedUpdateDataset cached_inverse_update_{};
     UpdateChange cached_state_changes_{};
+    bool has_node_injection_sensors_{false}; // TODO(jguo): cleanup v2 node single link registration path
 #ifndef NDEBUG
     // construction_complete is used for debug assertions only
     bool construction_complete_{false};

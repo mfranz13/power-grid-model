@@ -78,6 +78,12 @@ typedef struct PGM_PowerGridModel PGM_PowerGridModel;
 typedef struct PGM_Handle PGM_Handle;
 
 /**
+ * @brief Opaque struct for a validation report.
+ *
+ */
+typedef struct PGM_ValidationReport PGM_ValidationReport;
+
+/**
  * @brief Opaque struct for the option class.
  *
  * The option class is used to set calculation options like calculation method.
@@ -141,6 +147,17 @@ typedef struct PGM_WritableDataset PGM_WritableDataset;
  */
 typedef struct PGM_DatasetInfo PGM_DatasetInfo;
 
+/**
+ * @brief Opaque struct for a logger object.
+ *
+ * A logger captures diagnostic output (text or benchmark timings) produced during calculations.
+ * Loggers are created with PGM_create_logger(), registered to a handle with PGM_register_logger(),
+ * and must be destroyed with PGM_destroy_logger() after unregistering with PGM_unregister_logger().
+ * Do not register the same logger to handles that are used concurrently by different user threads unless synchronized
+ * externally.
+ */
+typedef struct PGM_Logger PGM_Logger;
+
 // NOLINTEND(modernize-use-using)
 
 // NOLINTBEGIN(performance-enum-size,cppcoreguidelines-use-enum-class)
@@ -191,6 +208,15 @@ enum PGM_ErrorCode {
 };
 
 /**
+ * @brief Result of checking a validation report.
+ *
+ */
+enum PGM_ValidationCode {
+    PGM_validation_pass = 0, /**< validation found no issues */
+    PGM_validation_fail = 1  /**< validation found issues */
+};
+
+/**
  * @brief Enumeration of C basic data types.
  *
  */
@@ -217,6 +243,22 @@ enum PGM_SerializationFormat {
 enum PGM_ShortCircuitVoltageScaling {
     PGM_short_circuit_voltage_scaling_minimum = 0, /**< voltage scaling for minimum short circuit currents */
     PGM_short_circuit_voltage_scaling_maximum = 1, /**< voltage scaling for maximum short circuit currents */
+};
+
+/**
+ * @brief Enumeration of the calculation initializations.
+ *
+ */
+enum PGM_CalculationInitialization {
+    /** default initialization of the selected calculation method */
+    PGM_calculation_initialization_default = 0,
+    /** flat start: every bus at 1 p.u. with the source angle and its phase shift, source buses at their reference
+     * voltage, PV buses at their reference magnitude */
+    PGM_calculation_initialization_flat = 1,
+    /** start from a linear voltage guess (loads and generators as constant admittances) */
+    PGM_calculation_initialization_linear = 2,
+    /** every bus at the average reference voltage of all sources with its phase shift */
+    PGM_calculation_initialization_average_source = 3,
 };
 
 /**
@@ -247,6 +289,21 @@ enum PGM_TapChangingStrategy {
 enum PGM_ExperimentalFeatures {
     PGM_experimental_features_disabled = 0, /**< disable experimental features */
     PGM_experimental_features_enabled = 1,  /**< enable experimental features */
+};
+
+/**
+ * @brief Enumeration of logger types.
+ *
+ * Selects which kind of diagnostic output a logger captures.
+ *
+ */
+enum PGM_LoggerType {
+    // PGM_logger_type_critical = 0, // < reserved for future extension: logger that captures critical error messages
+    // PGM_logger_type_error = 1,    // < reserved for future extension: logger that captures error messages
+    // PGM_logger_type_warning = 2,  // < reserved for future extension: logger that captures warning messages
+    PGM_logger_type_info = 3, // < logger that captures timestamped text messages
+    // PGM_logger_type_debug = 4,    // < reserved for future extension: logger that captures debug messages
+    PGM_benchmark_logger = 5, // < logger that captures timing information per calculation phase
 };
 
 // NOLINTEND(performance-enum-size,cppcoreguidelines-use-enum-class)

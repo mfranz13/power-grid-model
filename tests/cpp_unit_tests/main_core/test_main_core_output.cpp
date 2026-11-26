@@ -43,7 +43,7 @@ namespace power_grid_model::main_core {
 namespace {
 
 using PowerSensorOutputComponents =
-    Container<ExtraRetrievableTypes<Base, Branch, Branch3, Appliance, GenericLoadGen, GenericPowerSensor>,
+    Container<ExtraRetrievableTypes<Base, Edge, Branch, Branch3, Appliance, GenericLoadGen, GenericPowerSensor>,
               GenericBranch, ThreeWindingTransformer, Source, Shunt, SymGenerator, SymLoad, SymPowerSensor>;
 using PowerSensorOutputState = MainModelState<PowerSensorOutputComponents>;
 
@@ -119,7 +119,7 @@ auto make_power_sensor_output_state() -> PowerSensorOutputState {
         SymLoadGenInput{
             .id = 13, .node = 100, .status = 1, .type = LoadGenType::const_pq, .p_specified = 0.0, .q_specified = 0.0},
         u_rated);
-
+    state.comp_topo = std::make_shared<ComponentTopology>();
     state.components.set_construction_complete();
 
     auto coupling = std::make_shared<TopologicalComponentToMathCoupling>();
@@ -194,6 +194,11 @@ auto make_current_sensor_output_state() -> CurrentSensorOutputState {
     topology->branch3_node_idx = {{0, 1, 2}};
     state.comp_topo = std::move(topology);
 
+    auto reduced_topology = std::make_shared<ReducedTopology>();
+    reduced_topology->topo_node_coup.coupling.user_nodes_to_topo_nodes = {
+        {.group = 0, .pos = 0}, {.group = 1, .pos = 0}, {.group = 2, .pos = 0}};
+    state.reduced_topology = std::move(reduced_topology);
+
     auto coupling = std::make_shared<TopologicalComponentToMathCoupling>();
     coupling->branch = {{.group = 0, .pos = 0}};
     // The branch position is not consumed when the disconnected-terminal guard returns. Reusing position 0 makes
@@ -244,6 +249,9 @@ TEST_CASE("Test main core output") {
         reduced_topology->topo_node_coup.coupling.user_links_to_topo_nodes = {
             {.group = 0, .pos = 0}, {.group = 0, .pos = 1}, {.group = disconnected, .pos = disconnected}};
         state.reduced_topology = std::make_shared<ReducedTopology const>(std::move(*reduced_topology));
+        auto topo_comp_coup = std::make_shared<TopologicalComponentToMathCoupling>();
+        topo_comp_coup->node = {{.group = 0, .pos = 0}};
+        state.topo_comp_coup = std::move(topo_comp_coup);
 
         SUBCASE("Steady state output") {
             MathOutput<std::vector<SolverOutput<symmetric_t>>> const math_output{
@@ -477,6 +485,7 @@ TEST_CASE_TEMPLATE("Test main core power sensor output with reduced component co
                                                         .g1 = 0.0,
                                                         .b1 = 0.0},
                                      10e3, 10e3);
+    state.comp_topo = std::make_shared<ComponentTopology>();
     state.components.set_construction_complete();
 
     auto coupling = std::make_shared<TopologicalComponentToMathCoupling>();

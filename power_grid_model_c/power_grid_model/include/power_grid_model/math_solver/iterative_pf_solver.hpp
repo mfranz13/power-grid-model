@@ -32,8 +32,7 @@ template <symmetry_tag sym, typename DerivedSolver> class IterativePFSolver {
     friend DerivedSolver;
     SolverOutput<sym> run_power_flow(YBus<sym> const& y_bus, PowerFlowInput<sym> const& input, double err_tol,
                                      Idx max_iter, bool cache_run, Logger& log) {
-        // keep copy, as reference might break batching
-        auto derived_solver = static_cast<DerivedSolver&>(*this);
+        auto& derived_solver = static_cast<DerivedSolver&>(*this);
 
         // prepare
         SolverOutput<sym> output;
@@ -92,6 +91,29 @@ template <symmetry_tag sym, typename DerivedSolver> class IterativePFSolver {
     void calculate_result(YBus<sym> const& y_bus, PowerFlowInput<sym> const& input, SolverOutput<sym>& output) {
         detail::calculate_pf_result(y_bus, input, sources_per_bus_.get(), load_gens_per_bus_.get(), output,
                                     [this](Idx i) { return (load_gen_type_.get())[i]; });
+    }
+
+    // Average reference voltage of all sources, with the topological phase shift of the source buses offset
+    DoubleComplex average_source_voltage(PowerFlowInput<sym> const& input) const {
+        std::vector<double> const& phase_shift = phase_shift_.get();
+        DoubleComplex sum_u_ref = 0.0;
+        for (auto const& [bus, sources] : enumerated_zip_sequence(sources_per_bus_.get())) {
+            for (Idx const source : sources) {
+                sum_u_ref += input.source[source] * std::exp(1.0i * -phase_shift[bus]); // offset phase shift
+            }
+        }
+        return sum_u_ref / static_cast<double>(input.source.size());
+    }
+
+    // Initialize every bus to the average reference voltage of all sources, with the topological phase shift of each
+    // bus accounted for
+    void make_average_source_start(PowerFlowInput<sym> const& input, ComplexValueVector<sym>& output_u) const {
+        std::vector<double> const& phase_shift = phase_shift_.get();
+        DoubleComplex const u_ref = average_source_voltage(input);
+        for (Idx i = 0; i != n_bus_; ++i) {
+            // consider phase shift
+            output_u[i] = ComplexValue<sym>{u_ref * std::exp(1.0i * phase_shift[i])};
+        }
     }
 
   private:

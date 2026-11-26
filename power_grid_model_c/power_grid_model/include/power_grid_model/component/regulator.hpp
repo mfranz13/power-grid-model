@@ -9,8 +9,9 @@
 #include "../auxiliary/input.hpp"
 #include "../auxiliary/output.hpp"
 #include "../auxiliary/update.hpp"
-#include "power_grid_model/common/common.hpp"
-#include "power_grid_model/common/enum.hpp"
+#include "../common/common.hpp"
+#include "../common/enum.hpp"
+
 #include <cassert>
 #include <concepts>
 
@@ -30,7 +31,7 @@ class Regulator : public Base {
     ComponentType math_model_type() const final { return ComponentType::regulator; }
     bool status() const { return status_; }
 
-    void set_status(IntS status) { status_ = static_cast<bool>(status); }
+    void set_status(IntS status) { update_bool(status, status_); }
 
     auto inverse(std::convertible_to<RegulatorUpdate> auto update_data) const {
         assert(update_data.id == this->id() || is_nan(update_data.id));

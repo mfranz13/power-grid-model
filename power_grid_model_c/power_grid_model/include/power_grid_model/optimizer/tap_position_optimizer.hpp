@@ -32,12 +32,12 @@
 #include "../main_core/state_queries.hpp"
 
 #include <boost/graph/compressed_sparse_row_graph.hpp>
-
-#include <algorithm>
-#include <array>
 #include <boost/graph/graph_selectors.hpp>
 #include <boost/graph/iteration_macros.hpp>
 #include <boost/pending/property.hpp>
+
+#include <algorithm>
+#include <array>
 #include <cassert>
 #include <compare>
 #include <concepts>
@@ -678,7 +678,7 @@ template <transformer_c ComponentType, typename State, steady_state_solver_outpu
 inline auto u_pu(State const& state, std::vector<SolverOutputType> const& solver_output, Idx topology_index,
                  ControlSide control_side) {
     auto const controlled_node_idx = get_topo_node<ComponentType>(state, topology_index, control_side);
-    auto const node_math_id = get_math_id<Node>(state, controlled_node_idx);
+    auto const node_math_id = get_user_node_math_id(state, controlled_node_idx);
     return solver_output[node_math_id.group].u[node_math_id.pos];
 }
 
@@ -697,7 +697,7 @@ inline bool is_regulated_transformer_connected(TapRegulatorRef<RegulatedTypes...
                                                State const& state) {
     auto const controlled_node_idx = get_topo_node<ComponentType>(state, regulator.transformer.topology_index(),
                                                                   regulator.regulator.get().control_side());
-    return get_math_id<Node>(state, controlled_node_idx) != unregulated_idx;
+    return get_user_node_math_id(state, controlled_node_idx) != unregulated_idx;
 }
 
 struct VoltageBand {
@@ -893,13 +893,21 @@ class TapPositionOptimizerImpl<std::tuple<TransformerTypes...>, StateCalculator,
         IntS search(bool prefer_higher_) const {
             // This logic is used to determine which of the middle points could be of interest
             // given strategy used in optimization:
-            // Since in BinarySearch we insist on absolute upper and lower bounds, we only need to
-            // find the corresponding mid point. std::midpoint returns always the lower mid point
+            // In BinarySearch we rely on upper and lower bounds to find the corresponding mid point.
+            // std::midpoint returns always the relative 'lower' mid point
             // if the range is of even length. This is why we need to adjust bounds accordingly.
             // Not because upper bound and lower bound might be reversed, which is not possible.
+            // In the case the optimization target is beyond the range, both boundaries should be
+            // considered, especially in the final iteration of the binary search.
             bool const prefer_higher = control_at_tap_side_ != prefer_higher_;
             auto const primary_bound = prefer_higher ? upper_bound_ : lower_bound_;
             auto const secondary_bound = prefer_higher ? lower_bound_ : upper_bound_;
+            auto const current_at_bound = current_ == primary_bound || current_ == secondary_bound;
+            bool const is_one_apart = std::abs(static_cast<int>(primary_bound) - secondary_bound) == 1;
+            // Handle edge case: 1 off and current already not satisfying
+            if (is_one_apart && current_at_bound) {
+                return current_ == primary_bound ? secondary_bound : primary_bound;
+            }
             return std::midpoint(primary_bound, secondary_bound);
         }
 
@@ -939,8 +947,7 @@ class TapPositionOptimizerImpl<std::tuple<TransformerTypes...>, StateCalculator,
         };
 
         if (tap_search && !is_supported(tap_search)) {
-            throw TapSearchStrategyIncompatibleError{
-                "Search method is incompatible with optimization strategy: ", strategy, tap_search.value()};
+            throw TapSearchStrategyIncompatibleError{"TapPositionOptimizerImpl", strategy, tap_search.value()};
         }
 
         if (!tap_search) {

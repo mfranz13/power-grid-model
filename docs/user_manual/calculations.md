@@ -14,13 +14,13 @@ With power-grid-model it is possible to perform three different types of calcula
   This calculation can be performed by using the
   {py:class}`calculate_power_flow <power_grid_model.PowerGridModel.calculate_power_flow>` method.
   An example of usage of the power-flow calculation function is given in
-  [Power flow Example](../examples/Power%20Flow%20Example.ipynb)
+  [Power flow Example](../example_notebooks/Power%20Flow%20Example.ipynb)
 - [State estimation](#state-estimation-algorithms): a statistical method that calculates the most probabilistic state of
   the grid, given sensor values with an uncertainty.
   This calculation can be performed by using the
   {py:class}`calculate_state_estimation <power_grid_model.PowerGridModel.calculate_state_estimation>` method.
   An example of usage of the power-flow calculation function is given in
-  [State Estimation Example](../examples/State%20Estimation%20Example.ipynb)
+  [State Estimation Example](../example_notebooks/State%20Estimation%20Example.ipynb)
 - [Short circuit](#short-circuit-calculation-algorithms): a "what-if" scenario calculation with short circuit entries.
   This calculation can be performed by using the
   {py:class}`calculate_short_circuit <power_grid_model.PowerGridModel.calculate_short_circuit>` method.
@@ -43,8 +43,7 @@ Output:
 - Node voltage magnitude and angle
 - Power flow through branches
 
-See [Power flow algorithms](../algorithms/pf-algorithms.md#power-flow-algorithms) for detailed documentation on the
-calculation methods.
+See [Power flow algorithms details](../algorithms/pf-algorithms.md) for detailed documentation on the calculation methods.
 
 ##### Regulated power flow
 
@@ -53,7 +52,7 @@ However, in practice, the grid often contains regulators for certain components.
 When including those regulators in the calculations, the grid may be optimized according to the power flow results and
 the behaviour of the regulators.
 
-See [Regulated power flow calculations](../algorithms/pf-algorithms.md#regulated-power-flow-calculations) for detailed
+See [Regulated power flow calculations](#regulated-power-flow-calculations) for detailed
 documentation on regulated
 power flow calculations.
 
@@ -185,7 +184,7 @@ Input:
 - Network data: topology + component attributes
 - Fault type and impedance.
 - In the API call: choose between `minimum` and `maximum` voltage scaling to calculate the minimum or maximum short
-- circuit currents (according to IEC 60909).
+  circuit currents (according to IEC 60909).
 
 Output:
 
@@ -194,7 +193,8 @@ Output:
 
 ```{note}
 Short-circuit calculations are currently implemented in the phase (abc) domain and therefore require a grounded configurations in certain cases, similar to asymmetric power flow calculations.
-For details on how floating grids are treated in power-grid-model, please refer to[Floating grid handling](calulations.md#floating-grid-handling).
+For details on how floating grids are treated in power-grid-model, please refer to [Floating grid handling](#floating-grid-handling).
+```
 
 #### Common calculations
 
@@ -240,7 +240,7 @@ The option affects which attributes are required and how results are exposed.
   for all output variables.
 
 ```{note}
-In power-grid model, asymmetric calculations with certain configurations require the network to have a reference to ground. For details on how floating grids are treated in power-grid-model, please refer to [Floating grid handling](calulations.md#floating-grid-handling).
+In power-grid model, asymmetric calculations with certain configurations require the network to have a reference to ground. For details on how floating grids are treated in power-grid-model, please refer to [Floating grid handling](#floating-grid-handling).
 ```
 
 ```{note}
@@ -299,6 +299,9 @@ By default, the [Newton-Raphson](../algorithms/pf-algorithms.md#newton-raphson-p
 ```
 
 ```{note}
+Voltage regulation by a [voltage regulator](components.md#voltage-regulator) is only supported by the
+[Newton-Raphson](../algorithms/pf-algorithms.md#newton-raphson-power-flow) method.
+
 Fork extension: grids with DC components (`dc_node`/`dc_line`/`vsc`) are calculated with
 `CalculationMethod.hybrid_newton_raphson`; see [Hybrid AC/DC power flow](./hybrid-acdc.md).
 ```
@@ -345,6 +348,9 @@ find the range of loading conditions that are relevant for your use case and the
 only use linear methods within this range for the specific grid configuration.
 
 Non convergence of newton raphson is a good signal of unpractical or unfeasible systems.
+In a meshed grid with much of the generation far from the source, it can also come from the start: try
+`calculation_initialization=CalculationInitialization.flat` (see
+[Initialization](../algorithms/pf-algorithms.md#initialization)) before concluding that the system has no solution.
 This signal can be ignored when using linear methods.
 Similarly, having atleast some results from linear methods can aid in finding data errors or the reason
 for non convergence of newton raphson method.
@@ -376,7 +382,7 @@ option.
 | No automatic tap changing (regular power flow)                              | &#10004; | &#10004; | {py:class}`TapChangingStrategy.disabled <power_grid_model.enum.TapChangingStrategy.disabled>`               |
 | Optimize tap positions for any value in the voltage band                    |          |          | {py:class}`TapChangingStrategy.any_valid_tap <power_grid_model.enum.TapChangingStrategy.any_valid_tap>`     |
 | Optimize tap positions for lowest possible voltage in the voltage band      |          |          | {py:class}`TapChangingStrategy.min_voltage_tap <power_grid_model.enum.TapChangingStrategy.min_voltage_tap>` |
-| Optimize tap positions for lowest possible voltage in the voltage band      |          |          | {py:class}`TapChangingStrategy.max_voltage_tap <power_grid_model.enum.TapChangingStrategy.max_voltage_tap>` |
+| Optimize tap positions for highest possible voltage in the voltage band     |          |          | {py:class}`TapChangingStrategy.max_voltage_tap <power_grid_model.enum.TapChangingStrategy.max_voltage_tap>` |
 | Optimize tap positions for any value in the voltage band with binary search |          | &#10004; | {py:class}`TapChangingStrategy.fast_any_tap <power_grid_model.enum.TapChangingStrategy.fast_any_tap>`       |
 
 For detailed control logic, initialization behavior, search methods, and error handling for automatic tap changing,
@@ -428,7 +434,7 @@ The framework for creating the batches is the same for all types of calculations
 For every component, the attributes that can be updated in a batch scenario are mentioned in
 [Components](components.md).
 Examples of batch calculations for timeseries and contingency analysis are given in
-[Power Flow Example](../examples/Power%20Flow%20Example.ipynb)
+[Power Flow Example](../example_notebooks/Power%20Flow%20Example.ipynb)
 
 The same method as for single calculations, {py:class}`power_grid_model.PowerGridModel.calculate_power_flow`, can be
 used to calculate a number of scenarios in one go.
@@ -455,7 +461,7 @@ See the examples below for usage.
 - Independent batches are useful for a dense sampling of a small subset of components, e.g. time series power flow
   calculation.
 
-See the [Performance Guide](performance-guide.md#using-independent-batches) for more suggestions.
+See the [Performance Guide](performance-guide.md#batch-data-set) for more suggestions.
 
 #### Example: dependent batch update
 

@@ -24,7 +24,6 @@
 #include <complex>
 #include <concepts>
 #include <cstdlib>
-#include <cstring>
 #include <exception>
 #include <filesystem>
 #include <format>
@@ -73,11 +72,11 @@ class Subcase {
     };
 
   public:
-    Subcase(std::optional<std::string> raises, std::optional<std::string> xfail)
+    Subcase(std::optional<std::string> raises, std::optional<std::vector<std::string>> xfail)
         : raises_{std::move(raises)}, xfail_raises_{std::move(xfail)} {}
 
     void check_message(bool statement, std::string_view message) {
-        if (statement || xfail_raises_ != "AssertionError") {
+        if (statement || !xfail_raises_ || !std::ranges::contains(*xfail_raises_, "AssertionError")) {
             CHECK_MESSAGE(statement, message);
         } else {
             // delay the check to the end
@@ -98,7 +97,7 @@ class Subcase {
 
   private:
     std::optional<std::string> raises_{};
-    std::optional<std::string> xfail_raises_{};
+    std::optional<std::vector<std::string>> xfail_raises_{};
     bool has_failing_assertion{};
 
     template <typename T>
@@ -135,9 +134,11 @@ class Subcase {
                 bool const xfailed = subcase.has_failing_assertion;
                 CHECK_MESSAGE(xfailed, "XPASS");
             } catch (std::exception const& e) { // NOSONAR(S1181)
-                subcase.check_message(match_exception(e, xfail_raises_.value()),
+                bool const matches = std::ranges::any_of(
+                    *xfail_raises_, [&e](std::string const& name) { return match_exception(e, name); });
+                subcase.check_message(matches,
                                       std::format("Test case marked as xfail with message '{}' but got exception: {}",
-                                                  xfail_raises_.value(), e.what()));
+                                                  json(*xfail_raises_).dump(), e.what()));
             }
         };
     }
@@ -402,6 +403,14 @@ inline auto& optimizer_strategy_mapping() {
         {"fast_any_tap", PGM_tap_changing_strategy_fast_any_tap}};
     return mapping;
 }
+inline auto& calculation_initialization_mapping() {
+    static std::map<std::string, PGM_CalculationInitialization, std::less<>> const mapping{
+        {"default", PGM_calculation_initialization_default},
+        {"linear", PGM_calculation_initialization_linear},
+        {"flat", PGM_calculation_initialization_flat},
+        {"average_source", PGM_calculation_initialization_average_source}};
+    return mapping;
+}
 inline auto& experimental_features_mapping() {
     static std::map<std::string, PGM_ExperimentalFeatures, std::less<>> const mapping{
         {"disabled", PGM_experimental_features_disabled}, {"enabled", PGM_experimental_features_enabled}};
@@ -416,6 +425,7 @@ struct CaseParam {
     PGM_CalculationMethod calculation_method;
     PGM_ShortCircuitVoltageScaling short_circuit_voltage_scaling;
     PGM_TapChangingStrategy tap_changing_strategy;
+    PGM_CalculationInitialization calculation_initialization;
     PGM_ExperimentalFeatures experimental_features;
     double err_tol = 1e-8;
     Idx max_iter = 20;
@@ -423,7 +433,7 @@ struct CaseParam {
     bool is_batch{};
     double rtol{};
     std::optional<std::string> raises{};
-    std::optional<std::string> xfail{};
+    std::optional<std::vector<std::string>> xfail{};
     std::map<std::string, double, std::less<>> atol;
 
     static std::string replace_backslash(std::string const& str) {
@@ -443,6 +453,7 @@ Options get_options(CaseParam const& param, Idx threading = -1) {
     options.set_threading(threading);
     options.set_short_circuit_voltage_scaling(param.short_circuit_voltage_scaling);
     options.set_tap_changing_strategy(param.tap_changing_strategy);
+    options.set_calculation_initialization(param.calculation_initialization);
     options.set_experimental_features(param.experimental_features);
     return options;
 }
@@ -495,7 +506,9 @@ std::optional<CaseParam> construct_case(std::filesystem::path const& case_dir, j
     }
     if (calculation_method_params.contains("xfail")) {
         if (json const& xfail = calculation_method_params.at("xfail"); xfail.contains("raises")) {
-            param.xfail = xfail.at("raises").get<std::string>();
+            json const& exceptions = xfail.at("raises");
+            param.xfail = exceptions.is_array() ? exceptions.get<std::vector<std::string>>()
+                                                : std::vector{exceptions.get<std::string>()};
         }
     }
     if (calculation_type == PGM_short_circuit) {
@@ -506,6 +519,8 @@ std::optional<CaseParam> construct_case(std::filesystem::path const& case_dir, j
 
     std::string const tap_strategy_str = calculation_method_params.value("tap_changing_strategy", "disabled");
     param.tap_changing_strategy = optimizer_strategy_mapping().at(tap_strategy_str);
+    std::string const initialization_str = calculation_method_params.value("calculation_initialization", "default");
+    param.calculation_initialization = calculation_initialization_mapping().at(initialization_str);
     std::string const experimental_features_str = calculation_method_params.value("experimental_features", "disabled");
     param.experimental_features = experimental_features_mapping().at(experimental_features_str);
     param.case_name += sym ? "-sym"s : "-asym"s;

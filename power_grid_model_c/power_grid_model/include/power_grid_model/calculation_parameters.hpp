@@ -294,6 +294,7 @@ template <symmetry_tag sym_type> struct PowerFlowInput {
     ComplexValueVector<sym> s_injection; // Specified injection power of each load_gen
     std::vector<VoltageRegulatorCalcParam<sym>> voltage_regulator;
     IntSVector load_gen_status;
+    CalculationInitialization initialization{CalculationInitialization::default_initialization};
 
     // fork extension: hybrid AC/DC data; empty when the math model has no DC components
     IntSVector is_dc_bus;          // per math bus
@@ -490,15 +491,15 @@ struct ReducedComponentTopology {
     MaybeOwningConstVector<Idx> shunt_node_idx;
     MaybeOwningConstVector<Idx> source_node_idx;
     MaybeOwningConstVector<Idx> load_gen_node_idx;
-    MaybeOwningConstVector<LoadGenType> load_gen_type;
+    std::span<LoadGenType const> load_gen_type;
     MaybeOwningConstVector<Idx> voltage_sensor_node_idx;
-    MaybeOwningConstVector<Idx> power_sensor_object_idx; // the index is relative to branch, source, shunt or load_gen
-    MaybeOwningConstVector<MeasuredTerminalType> power_sensor_terminal_type;
-    MaybeOwningConstVector<Idx> current_sensor_object_idx; // the index is relative to branch
-    MaybeOwningConstVector<MeasuredTerminalType> current_sensor_terminal_type;
-    MaybeOwningConstVector<ComponentType> regulator_type;
-    MaybeOwningConstVector<Idx> regulated_object_idx; // the index is relative to branch or branch3
-    MaybeOwningConstVector<ComponentType> regulated_object_type;
+    std::span<Idx const> power_sensor_object_idx; // the index is relative to branch, source, shunt or load_gen
+    std::span<MeasuredTerminalType const> power_sensor_terminal_type;
+    std::span<Idx const> current_sensor_object_idx; // the index is relative to branch
+    std::span<MeasuredTerminalType const> current_sensor_terminal_type;
+    std::span<ComponentType const> regulator_type;
+    std::span<Idx const> regulated_object_idx; // the index is relative to branch or branch3
+    std::span<ComponentType const> regulated_object_type;
 
     constexpr Idx n_node_total() const { return n_node + std::ssize(branch3_node_idx); }
 
@@ -526,9 +527,9 @@ struct ReducedComponentTopology {
 
 struct TopologicalNode {
     IdxVector user_nodes;
-    std::vector<BranchIdx> user_links;
+    std::vector<BranchIdx> internal_links;
 
-    constexpr auto is_supernode() const noexcept -> bool { return user_nodes.size() > 1 && !user_links.empty(); }
+    constexpr auto is_supernode() const noexcept -> bool { return user_nodes.size() > 1 && !internal_links.empty(); }
 };
 
 struct ComponentToTopoNodeCoupling {

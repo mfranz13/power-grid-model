@@ -1,5 +1,10 @@
 ﻿{
   "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 3,
+    "patch": 0
+  },
   "configurePresets": [
     {
       "name": "base",
@@ -22,7 +27,7 @@
         "REPRODUCIBILITY_LINKER_FLAGS": "",
         "CFLAGS": "$penv{CFLAGS} $env{PLATFORM_C_FLAGS} $env{COMPILER_C_FLAGS} $env{COVERAGE_FLAGS} $env{SANITIZER_FLAGS} $env{REPRODUCIBILITY_COMMON_FLAGS}",
         "CXXFLAGS": "$penv{CXXFLAGS} $env{PLATFORM_CXX_FLAGS} $env{COMPILER_CXX_FLAGS} $env{COVERAGE_FLAGS} $env{SANITIZER_FLAGS} $env{REPRODUCIBILITY_COMMON_FLAGS}",
-        "LDFLAGS": "$env{PLATFORM_LINKER_FLAGS} $env{SANITIZER_FLAGS} $env{SANITIZER_LINKER_FLAGS} $env{REPRODUCIBILITY_LINKER_FLAGS} $env{REPRODUCIBILITY_LINKER_FLAGS}"
+        "LDFLAGS": "$env{PLATFORM_LINKER_FLAGS} $env{SANITIZER_FLAGS} $env{SANITIZER_LINKER_FLAGS} $env{REPRODUCIBILITY_LINKER_FLAGS}"
       },
       "architecture": {
         "value": "x64",
@@ -122,6 +127,14 @@
       "environment": {
         "SANITIZER_FLAGS": "-fstack-protector -fsanitize=address,pointer-compare,undefined -fno-sanitize-recover"
       },
+      "hidden": true
+    },
+    {
+      "name": "unix-thread-sanitizer",
+      "description": "ThreadSanitizer; mutually exclusive with AddressSanitizer, hence a separate preset family.",
+      "environment": {
+        "SANITIZER_FLAGS": "-fsanitize=thread -fno-sanitize-recover"
+      },
       "inherits": "unix-base",
       "hidden": true
     },
@@ -174,15 +187,17 @@
         "CMAKE_C_COMPILER": "clang",
         "CMAKE_CXX_COMPILER": "clang++"
       },
-      "environment": {
-        "SANITIZER_LINKER_FLAGS": "-lubsan"
-      },
       "condition": {
         "type": "notEquals",
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
       },
-      "inherits": "unix-sanitizer",
+      "inherits": "unix-base",
+      "hidden": true
+    },
+    {
+      "name": "clang-linux-sanitizer-base",
+      "inherits": ["unix-sanitizer", "clang-linux-base"],
       "hidden": true
     },
     {
@@ -196,24 +211,56 @@
         "lhs": "${hostSystemName}",
         "rhs": "Darwin"
       },
-      "inherits": "unix-sanitizer",
+      "inherits": "unix-base",
+      "hidden": true
+    },
+    {
+      "name": "apple-clang-sanitizer-base",
+      "inherits": ["unix-sanitizer", "apple-clang-base"],
+      "hidden": true
+    },
+    {
+      "name": "clang-linux-tsan-base",
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang",
+        "CMAKE_CXX_COMPILER": "clang++"
+      },
+      "inherits": "unix-thread-sanitizer",
       "hidden": true
     },
     {
       "name": "clang-debug",
-      "inherits": ["debug", "clang-linux-base"]
+      "inherits": ["debug", "clang-linux-sanitizer-base"]
     },
     {
       "name": "clang-release",
+      "description": "Optimized build without sanitizers: use this for benchmarks.",
       "inherits": ["relwithdebinfo", "clang-linux-base"]
     },
     {
+      "name": "clang-sanitizer-release",
+      "inherits": ["relwithdebinfo", "clang-linux-sanitizer-base"]
+    },
+    {
       "name": "apple-clang-debug",
-      "inherits": ["debug", "apple-clang-base"]
+      "inherits": ["debug", "apple-clang-sanitizer-base"]
     },
     {
       "name": "apple-clang-release",
+      "description": "Optimized, no sanitizers: use this for benchmarks.",
       "inherits": ["relwithdebinfo", "apple-clang-base"]
+    },
+    {
+      "name": "apple-clang-sanitizer-release",
+      "inherits": ["relwithdebinfo", "apple-clang-sanitizer-base"]
+    },
+    {
+      "name": "clang-tsan-debug",
+      "inherits": ["debug", "clang-linux-tsan-base"]
+    },
+    {
+      "name": "clang-tsan-release",
+      "inherits": ["release", "clang-linux-tsan-base"]
     },
     {
       "name": "clang-tidy-debug",
@@ -236,14 +283,13 @@
     {
       "name": "gcc-base",
       "environment": {
-        "COMPILER_CXX_FLAGS": "$env{COMPILER_C_FLAGS} -Wno-maybe-uninitialized",
-        "SANITIZER_LINKER_FLAGS": "-static-libubsan"
+        "COMPILER_CXX_FLAGS": "$env{COMPILER_C_FLAGS} -Wno-maybe-uninitialized"
       },
       "cacheVariables": {
         "CMAKE_C_COMPILER": "gcc",
         "CMAKE_CXX_COMPILER": "g++"
       },
-      "inherits": "unix-sanitizer",
+      "inherits": "unix-base",
       "condition": {
         "type": "notEquals",
         "lhs": "${hostSystemName}",
@@ -252,12 +298,25 @@
       "hidden": true
     },
     {
+      "name": "gcc-sanitizer-base",
+      "environment": {
+        "SANITIZER_LINKER_FLAGS": "-static-libubsan"
+      },
+      "inherits": ["unix-sanitizer", "gcc-base"],
+      "hidden": true
+    },
+    {
       "name": "gcc-debug",
-      "inherits": ["debug", "gcc-base"]
+      "inherits": ["debug", "gcc-sanitizer-base"]
     },
     {
       "name": "gcc-release",
+      "description": "Optimized build without sanitizers: use this for benchmarks.",
       "inherits": ["relwithdebinfo", "gcc-base"]
+    },
+    {
+      "name": "gcc-sanitizer-release",
+      "inherits": ["relwithdebinfo", "gcc-sanitizer-base"]
     },
     {
       "name": "ci-clang-debug",
@@ -265,7 +324,7 @@
     },
     {
       "name": "ci-clang-release",
-      "inherits": "clang-release",
+      "inherits": "clang-sanitizer-release",
       "cacheVariables": {
         "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "TRUE"
       }
@@ -276,7 +335,7 @@
     },
     {
       "name": "ci-apple-clang-release",
-      "inherits": "apple-clang-release",
+      "inherits": "apple-clang-sanitizer-release",
       "cacheVariables": {
         "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "TRUE"
       }
@@ -290,7 +349,7 @@
     },
     {
       "name": "ci-gcc-release",
-      "inherits": ["gcc-release"],
+      "inherits": ["gcc-sanitizer-release"],
       "cacheVariables": {
         "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "TRUE"
       },
@@ -300,7 +359,7 @@
     },
     {
       "name": "ci-sonar",
-      "inherits": ["clang-linux-base", "debug", "unix-coverage"]
+      "inherits": ["clang-linux-sanitizer-base", "debug", "unix-coverage"]
     },
     {
       "name": "ci-clang-tidy-debug",
@@ -320,7 +379,8 @@
         "PGM_ENABLE_DEV_BUILD": "OFF",
         "PGM_MSVC_REPRODUCIBLE_BUILD": "ON",
         "CMAKE_INTERPROCEDURAL_OPTIMIZATION": "OFF",
-        "CMAKE_SHARED_LINKER_FLAGS": "/debug:None /Brepro /INCREMENTAL:NO /LTCG /NOCOFFGRPINFO"
+        "CMAKE_SHARED_LINKER_FLAGS": "/debug:None /Brepro /INCREMENTAL:NO /LTCG /NOCOFFGRPINFO",
+        "CMAKE_EXE_LINKER_FLAGS": "/debug:None /Brepro /INCREMENTAL:NO /LTCG /NOCOFFGRPINFO"
       }
     },
     {
@@ -328,7 +388,8 @@
       "inherits": ["clang-cl-base", "release"],
       "cacheVariables": {
         "PGM_ENABLE_DEV_BUILD": "OFF",
-        "CMAKE_SHARED_LINKER_FLAGS": "/Brepro /INCREMENTAL:NO"
+        "CMAKE_SHARED_LINKER_FLAGS": "/Brepro /INCREMENTAL:NO",
+        "CMAKE_EXE_LINKER_FLAGS": "/Brepro /INCREMENTAL:NO"
       }
     },
     {
@@ -358,10 +419,11 @@
         "SOURCE_DATE_EPOCH": "1",
         "DSYMUTIL": "",
         "REPRODUCIBILITY_COMMON_FLAGS": "$penv{REPRODUCIBILITY_COMMON_FLAGS} -frandom-seed=0 -Wdate-time",
-        "REPRODUCIBILITY_LINKER_FLAGS": "-Wl,-no_uuid -Wl,-S"
+        "REPRODUCIBILITY_LINKER_FLAGS": "-Wl,-S"
       },
       "cacheVariables": {
-        "PGM_ENABLE_DEV_BUILD": "OFF"
+        "PGM_ENABLE_DEV_BUILD": "OFF",
+        "CMAKE_EXE_LINKER_FLAGS": "$env{LDFLAGS} -Wl,-no_uuid"
       }
     }
   ],
@@ -391,12 +453,20 @@
       "configurePreset": "clang-release"
     },
     {
+      "name": "clang-sanitizer-release",
+      "configurePreset": "clang-sanitizer-release"
+    },
+    {
       "name": "apple-clang-debug",
       "configurePreset": "apple-clang-debug"
     },
     {
       "name": "apple-clang-release",
       "configurePreset": "apple-clang-release"
+    },
+    {
+      "name": "apple-clang-sanitizer-release",
+      "configurePreset": "apple-clang-sanitizer-release"
     },
     {
       "name": "clang-tidy-debug",
@@ -421,6 +491,10 @@
     {
       "name": "gcc-release",
       "configurePreset": "gcc-release"
+    },
+    {
+      "name": "gcc-sanitizer-release",
+      "configurePreset": "gcc-sanitizer-release"
     },
     {
       "name": "ci-clang-debug",
@@ -477,6 +551,14 @@
     {
       "name": "ci-apple-clang-reproducible",
       "configurePreset": "ci-apple-clang-reproducible"
+    },
+    {
+      "name": "clang-tsan-debug",
+      "configurePreset": "clang-tsan-debug"
+    },
+    {
+      "name": "clang-tsan-release",
+      "configurePreset": "clang-tsan-release"
     }
   ],
   "testPresets": [
@@ -505,12 +587,20 @@
       "configurePreset": "clang-release"
     },
     {
+      "name": "clang-sanitizer-release",
+      "configurePreset": "clang-sanitizer-release"
+    },
+    {
       "name": "apple-clang-debug",
       "configurePreset": "apple-clang-debug"
     },
     {
       "name": "apple-clang-release",
       "configurePreset": "apple-clang-release"
+    },
+    {
+      "name": "apple-clang-sanitizer-release",
+      "configurePreset": "apple-clang-sanitizer-release"
     },
     {
       "name": "clang-tidy-debug",
@@ -535,6 +625,10 @@
     {
       "name": "gcc-release",
       "configurePreset": "gcc-release"
+    },
+    {
+      "name": "gcc-sanitizer-release",
+      "configurePreset": "gcc-sanitizer-release"
     },
     {
       "name": "ci-clang-debug",
@@ -571,6 +665,20 @@
     {
       "name": "ci-clang-tidy-debug",
       "configurePreset": "ci-clang-tidy-debug"
+    },
+    {
+      "name": "clang-tsan-debug",
+      "configurePreset": "clang-tsan-debug",
+      "environment": {
+        "TSAN_OPTIONS": "halt_on_error=1"
+      }
+    },
+    {
+      "name": "clang-tsan-release",
+      "configurePreset": "clang-tsan-release",
+      "environment": {
+        "TSAN_OPTIONS": "halt_on_error=1"
+      }
     }
   ],
   "workflowPresets": [
@@ -694,6 +802,40 @@
       ]
     },
     {
+      "name": "clang-tsan-debug",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "clang-tsan-debug"
+        },
+        {
+          "type": "build",
+          "name": "clang-tsan-debug"
+        },
+        {
+          "type": "test",
+          "name": "clang-tsan-debug"
+        }
+      ]
+    },
+    {
+      "name": "clang-tsan-release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "clang-tsan-release"
+        },
+        {
+          "type": "build",
+          "name": "clang-tsan-release"
+        },
+        {
+          "type": "test",
+          "name": "clang-tsan-release"
+        }
+      ]
+    },
+    {
       "name": "clang-release",
       "steps": [
         {
@@ -724,6 +866,57 @@
         {
           "type": "test",
           "name": "apple-clang-release"
+        }
+      ]
+    },
+    {
+      "name": "clang-sanitizer-release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "clang-sanitizer-release"
+        },
+        {
+          "type": "build",
+          "name": "clang-sanitizer-release"
+        },
+        {
+          "type": "test",
+          "name": "clang-sanitizer-release"
+        }
+      ]
+    },
+    {
+      "name": "gcc-sanitizer-release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "gcc-sanitizer-release"
+        },
+        {
+          "type": "build",
+          "name": "gcc-sanitizer-release"
+        },
+        {
+          "type": "test",
+          "name": "gcc-sanitizer-release"
+        }
+      ]
+    },
+    {
+      "name": "apple-clang-sanitizer-release",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "apple-clang-sanitizer-release"
+        },
+        {
+          "type": "build",
+          "name": "apple-clang-sanitizer-release"
+        },
+        {
+          "type": "test",
+          "name": "apple-clang-sanitizer-release"
         }
       ]
     }

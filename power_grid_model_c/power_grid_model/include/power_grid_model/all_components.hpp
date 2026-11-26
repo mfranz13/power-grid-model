@@ -26,7 +26,6 @@
 #include "component/node.hpp"
 #include "component/power_sensor.hpp"
 #include "component/regulator.hpp"
-#include "component/sensor.hpp"
 #include "component/shunt.hpp"
 #include "component/source.hpp"
 #include "component/three_winding_transformer.hpp"
@@ -38,8 +37,10 @@
 
 namespace power_grid_model {
 
+// fork extension: DcLine and Vsc are real branches and must be registered before Link (see
+// validate_component_types_c).
 using AllComponents =
-    ComponentList<Node, DcNode, Line, AsymLine, Link, DcLine, Vsc, GenericBranch, Transformer,
+    ComponentList<Node, DcNode, Line, AsymLine, GenericBranch, Transformer, DcLine, Vsc, Link,
                   ThreeWindingTransformer, Shunt, Source, SymGenerator, AsymGenerator, SymLoad, AsymLoad,
                   SymPowerSensor, AsymPowerSensor, SymVoltageSensor, AsymVoltageSensor, SymCurrentSensor,
                   AsymCurrentSensor, Fault, TransformerTapRegulator, VoltageRegulator>;

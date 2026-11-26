@@ -141,6 +141,7 @@ class Topology {
         build_sparse_graph();
         dfs_search();
         couple_branch();
+        // Links are not coupled here; they're merged into topological nodes in supernodes.hpp
         couple_all_appliance();
         couple_voltage_regulators();
         couple_sensors();
@@ -577,7 +578,7 @@ class Topology {
                               [](MathModelTopology& topo) { topo.load_gen_type.resize(topo.n_load_gen()); });
         // assign load type
         for (auto const& [idx_math, load_gen_type] :
-             std::views::zip(by_const_ref(comp_coup_.load_gen), by_const_ref(comp_topo_.load_gen_type))) {
+             std::views::zip(by_const_ref(comp_coup_.load_gen), comp_topo_.load_gen_type)) {
             if (idx_math.group == disconnected) {
                 continue;
             }

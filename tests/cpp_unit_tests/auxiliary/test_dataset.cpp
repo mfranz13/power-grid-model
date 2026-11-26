@@ -8,6 +8,7 @@
 
 #include <power_grid_model/common/common.hpp>
 #include <power_grid_model/common/component_list.hpp>
+#include <power_grid_model/common/counting_iterator.hpp>
 #include <power_grid_model/common/exception.hpp>
 #include <power_grid_model/common/three_phase_tensor.hpp>
 #include <power_grid_model/common/typing.hpp>
@@ -21,7 +22,9 @@
 #include <iterator>
 #include <numeric>
 #include <ranges>
+#include <span>
 #include <stdexcept>
+#include <string_view>
 #include <type_traits>
 #include <vector>
 
@@ -209,11 +212,48 @@ auto get_colummnar_element(BufferSpan const& buffer_span, Idx idx) {
     return static_cast<A::InputType>(buffer_span[idx]);
 }
 
+template <typename BufferSpan> void check_row_attribute_spans(BufferSpan const& buffer_span) {
+    static_assert(!columnar_attribute_range<BufferSpan>);
+
+    auto const ids = get_attribute_span(buffer_span, &A::InputType::id, A::InputType::id_name);
+    auto const a1 = get_attribute_span(buffer_span, &A::InputType::a1, A::InputType::a1_name);
+
+    REQUIRE(std::ranges::ssize(ids) == std::ssize(buffer_span));
+    REQUIRE(std::ranges::ssize(a1) == std::ssize(buffer_span));
+    for (Idx idx = 0; idx < std::ssize(buffer_span); ++idx) {
+        // projection, not a copy
+        CHECK(&ids[idx] == &buffer_span[idx].id);
+        CHECK(&a1[idx] == &buffer_span[idx].a1);
+    }
+}
+
 template <typename BufferSpan>
 void check_row_span(BufferSpan const& buffer_span, Idx const& total_elements,
                     std::vector<A::InputType> const& a_buffer) {
     CHECK(std::size(buffer_span) == total_elements);
     CHECK(std::data(buffer_span) == a_buffer.data());
+
+    check_row_attribute_spans(buffer_span);
+}
+
+template <typename BufferSpan>
+void check_columnar_attribute_spans(BufferSpan const& buffer_span, std::span<ID const> const id_buffer,
+                                    std::span<double const> const a1_buffer, Idx offset = Idx{}) {
+    static_assert(columnar_attribute_range<BufferSpan>);
+
+    auto const ids = get_attribute_span(buffer_span, &A::InputType::id, A::InputType::id_name);
+    static_assert(std::same_as<std::remove_const_t<decltype(ids)>, std::span<ID const>>);
+
+    auto const a1 = get_attribute_span(buffer_span, &A::InputType::a1, A::InputType::a1_name);
+    auto const a0 = get_attribute_span(buffer_span, &A::InputType::a0, A::InputType::a0_name);
+
+    CHECK(std::ssize(ids) == buffer_span.size());
+    CHECK(ids.data() == id_buffer.data() + offset);
+
+    CHECK(std::ssize(a1) == buffer_span.size());
+    CHECK(a1.data() == a1_buffer.data() + offset);
+
+    CHECK(a0.empty());
 }
 
 } // namespace
@@ -336,6 +376,29 @@ TEST_CASE_TEMPLATE("Test range object", RangeObjectType, const_range_object<A::I
                 test::check_equal(element, range_object[count]);
                 ++count;
             }
+        }
+    }
+
+    SUBCASE("Attribute span access") {
+        SUBCASE("Existing attributes") {
+            auto const id_span = range_object.template get_attribute_span<ID>(AInput::id_name);
+            auto const a1_span = range_object.template get_attribute_span<double>(AInput::a1_name);
+
+            REQUIRE(std::ssize(id_span) == range_object.size());
+            CHECK(id_span.data() == id_buffer.data());
+
+            REQUIRE(std::ssize(a1_span) == range_object.size());
+            CHECK(a1_span.data() == a1_buffer.data());
+        }
+        SUBCASE("Missing attribute") {
+            auto const a0_span = range_object.template get_attribute_span<double>(AInput::a0_name);
+            CHECK(a0_span.empty());
+        }
+        SUBCASE("Sub-range") {
+            RangeObjectType const sub_range{range_object.begin() + 1, range_object.end()};
+            auto const ids = sub_range.template get_attribute_span<ID>(AInput::id_name);
+            CHECK(ids.data() == id_buffer.data() + 1);
+            CHECK(std::ssize(ids) == range_object.size() - 1);
         }
     }
 }
@@ -598,6 +661,7 @@ TEST_CASE_TEMPLATE("Test dataset (common)", DatasetType, ConstDataset, MutableDa
                                 CHECK(scenario_span.size() == elements_per_scenario);
                                 CHECK(all_scenario_spans[scenario].data() == scenario_span.data());
                                 CHECK(all_scenario_spans[scenario].size() == scenario_span.size());
+                                check_row_attribute_spans(scenario_span);
                             }
                         }
                     }
@@ -667,6 +731,7 @@ TEST_CASE_TEMPLATE("Test dataset (common)", DatasetType, ConstDataset, MutableDa
                             CHECK(scenario_span.size() == elements_per_scenarios[scenario]);
                             CHECK(all_scenario_spans[scenario].data() == scenario_span.data());
                             CHECK(all_scenario_spans[scenario].size() == scenario_span.size());
+                            check_row_attribute_spans(scenario_span);
                         }
                     }
                 }
@@ -693,6 +758,8 @@ TEST_CASE_TEMPLATE("Test dataset (common)", DatasetType, ConstDataset, MutableDa
                             CHECK(element.a1 == a1_buffer[idx]);
                             CHECK(is_nan(element.a0));
                         }
+
+                        check_columnar_attribute_spans(buffer_span, id_buffer, a1_buffer);
                     };
                     auto const check_all_spans = [&] {
                         check_span(dataset.template get_columnar_buffer_span<input_getter_s, A>());
@@ -758,18 +825,20 @@ TEST_CASE_TEMPLATE("Test dataset (common)", DatasetType, ConstDataset, MutableDa
 
                         auto const check_span = [&](auto const& buffer_span, Idx const& scenario = -1) {
                             auto element_number = total_elements;
-                            Idx aux_idx = 0;
+                            Idx scenario_offset = 0;
                             if (scenario != -1) {
                                 element_number = elements_per_scenario;
-                                aux_idx = scenario * elements_per_scenario;
+                                scenario_offset = scenario * elements_per_scenario;
                             }
                             CHECK(buffer_span.size() == element_number);
                             for (Idx idx = 0; idx < buffer_span.size(); ++idx) {
                                 auto const element = get_colummnar_element<DatasetType>(buffer_span, idx);
-                                CHECK(element.id == id_buffer[aux_idx + idx]);
-                                CHECK(element.a1 == a1_buffer[aux_idx + idx]);
+                                CHECK(element.id == id_buffer[scenario_offset + idx]);
+                                CHECK(element.a1 == a1_buffer[scenario_offset + idx]);
                                 CHECK(is_nan(element.a0));
                             }
+
+                            check_columnar_attribute_spans(buffer_span, id_buffer, a1_buffer, scenario_offset);
                         };
                         auto const check_all_spans = [&](auto const& scenario) {
                             check_span(dataset.template get_columnar_buffer_span<input_getter_s, A>());
@@ -843,6 +912,8 @@ TEST_CASE_TEMPLATE("Test dataset (common)", DatasetType, ConstDataset, MutableDa
                             CHECK(element.a1 == a1_buffer[idx]);
                             CHECK(is_nan(element.a0));
                         }
+
+                        check_columnar_attribute_spans(buffer_span, id_buffer, a1_buffer);
                     };
                     auto const check_all_spans = [&] {
                         check_span(dataset.template get_columnar_buffer_span<input_getter_s, A>());
@@ -909,18 +980,20 @@ TEST_CASE_TEMPLATE("Test dataset (common)", DatasetType, ConstDataset, MutableDa
                                              &a1_buffer]<typename T>(auto const& buffer_span,
                                                                      Idx const& scenario = -1) {
                         auto element_number = total_elements;
-                        Idx aux_idx = 0;
+                        Idx scenario_offset = 0;
                         if (scenario != -1) {
                             element_number = elements_per_scenarios[scenario];
-                            aux_idx = a_indptr[scenario];
+                            scenario_offset = a_indptr[scenario];
                         }
                         CHECK(buffer_span.size() == element_number);
                         for (Idx idx = 0; idx < buffer_span.size(); ++idx) {
                             auto const element = get_colummnar_element<T>(buffer_span, idx);
-                            CHECK(element.id == id_buffer[aux_idx + idx]);
-                            CHECK(element.a1 == a1_buffer[aux_idx + idx]);
+                            CHECK(element.id == id_buffer[scenario_offset + idx]);
+                            CHECK(element.a1 == a1_buffer[scenario_offset + idx]);
                             CHECK(is_nan(element.a0));
                         }
+
+                        check_columnar_attribute_spans(buffer_span, id_buffer, a1_buffer, scenario_offset);
                     };
                     auto const check_all_spans = [&check_span, &batch_size]<typename T>(auto& any_dataset,
                                                                                         auto const& scenario) {
@@ -1179,6 +1252,89 @@ TEST_CASE("Test writable dataset") {
         SUBCASE("Add inconsistent component info") {
             auto dataset = create_dataset(true, batch_size, dataset_type);
             CHECK_THROWS_AS(dataset.add_component_info(A::name, 1, batch_size + 1), DatasetError);
+        }
+    }
+}
+
+TEST_CASE("Test get_attribute_view") {
+    auto const& dataset_type = test_meta_data_all.datasets.front();
+    CAPTURE(std::string_view{dataset_type.name});
+
+    std::vector<A::InputType> const row_buffer{
+        {.id = 10, .a1 = 0.5}, {.id = 11, .a1 = 1.5}, {.id = 12, .a1 = 2.5}, {.id = 13, .a1 = 3.5}};
+    std::vector<ID> const ids{10, 11, 12, 13};
+    std::vector<double> const a1{0.5, 1.5, 2.5, 3.5};
+    std::vector<ID> const no_ids{};
+    Idx const total_elements = std::ssize(ids);
+
+    // checks the view over all scenarios and the view of each scenario s, which spans [offsets[s], offsets[s + 1])
+    auto const check_view = [](auto const& get_view, auto const& expected, std::vector<Idx> const& offsets) {
+        CHECK(std::ranges::equal(get_view(ConstDataset::invalid_index), expected));
+        for (Idx scenario = 0; scenario < std::ssize(offsets) - 1; ++scenario) {
+            CAPTURE(scenario);
+            auto const begin = offsets[scenario];
+            auto const end = offsets[scenario + 1];
+            CHECK(std::ranges::equal(get_view(scenario),
+                                     expected | std::views::drop(begin) | std::views::take(end - begin)));
+        }
+    };
+    auto const check_dataset = [&check_view, &a1](ConstDataset const& dataset, auto const& expected_ids,
+                                                  std::vector<Idx> const& offsets) {
+        check_view([&dataset](Idx scenario) { return get_component_ids_view(dataset, A::name, scenario); },
+                   expected_ids, offsets);
+        check_view(
+            [&dataset](Idx scenario) {
+                return get_attribute_view(dataset, A::name, A::InputType::a1_name, scenario).as<double>();
+            },
+            a1, offsets);
+    };
+    auto const check_layouts = [&](ConstDataset& dataset, Idx elements_per_scenario, Idx const* indptr,
+                                   std::vector<Idx> const& offsets) {
+        SUBCASE("Row-based buffer") {
+            dataset.add_buffer(A::name, elements_per_scenario, total_elements, indptr, row_buffer.data());
+            check_dataset(dataset, ids, offsets);
+        }
+        SUBCASE("Columnar buffer with ids") {
+            dataset.add_buffer(A::name, elements_per_scenario, total_elements, indptr, nullptr);
+            dataset.add_attribute_buffer(A::name, A::InputType::id_name, ids.data());
+            dataset.add_attribute_buffer(A::name, A::InputType::a1_name, a1.data());
+            check_dataset(dataset, ids, offsets);
+        }
+        SUBCASE("Columnar buffer without ids") {
+            dataset.add_buffer(A::name, elements_per_scenario, total_elements, indptr, nullptr);
+            dataset.add_attribute_buffer(A::name, A::InputType::a1_name, a1.data());
+            check_dataset(dataset, no_ids, offsets);
+        }
+    };
+
+    SUBCASE("Single dataset") {
+        auto dataset = test::create_dataset<ConstDataset>(false, 1, dataset_type);
+        check_layouts(dataset, total_elements, nullptr, {0, total_elements});
+    }
+    SUBCASE("Batch dataset") {
+        constexpr Idx batch_size{2};
+        auto dataset = test::create_dataset<ConstDataset>(true, batch_size, dataset_type);
+
+        SUBCASE("Uniform") { check_layouts(dataset, total_elements / batch_size, nullptr, {0, 2, total_elements}); }
+        SUBCASE("Non-uniform") {
+            std::vector<Idx> const indptr{0, 1, total_elements};
+            check_layouts(dataset, -1, indptr.data(), indptr);
+        }
+    }
+    SUBCASE("Mismatched attribute type") {
+        auto dataset = test::create_dataset<ConstDataset>(false, 1, dataset_type);
+
+        SUBCASE("Row-based buffer") {
+            dataset.add_buffer(A::name, total_elements, total_elements, nullptr, row_buffer.data());
+            CHECK_THROWS_AS(get_attribute_view(dataset, A::name, A::InputType::a1_name).as<ID>(), UnreachableHit);
+        }
+        SUBCASE("Columnar buffer") {
+            dataset.add_buffer(A::name, total_elements, total_elements, nullptr, nullptr);
+            dataset.add_attribute_buffer(A::name, A::InputType::a1_name, a1.data());
+            CHECK_THROWS_AS(get_attribute_view(dataset, A::name, A::InputType::a1_name).as<ID>(), UnreachableHit);
+        }
+        SUBCASE("Empty view does not check the type") {
+            CHECK_NOTHROW(get_attribute_view(dataset, A::name, A::InputType::a1_name).as<ID>());
         }
     }
 }

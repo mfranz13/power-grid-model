@@ -8,21 +8,18 @@ add_library(
     SHARED
     "src/buffer.cpp"
     "src/handle.cpp"
+    "src/logger.cpp"
     "src/meta_data.cpp"
     "src/model.cpp"
     "src/options.cpp"
+    "src/validation.cpp"
     "src/dataset_definitions.cpp"
     "src/serialization.cpp"
     "src/dataset.cpp"
     "src/math_solver.cpp"
 )
 
-target_include_directories(
-    power_grid_model_c
-    PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-)
+file(GLOB_RECURSE pgm_c_private_headers "${CMAKE_CURRENT_SOURCE_DIR}/src/*.hpp")
 
 file(
     GLOB_RECURSE pgm_c_public_headers
@@ -36,6 +33,16 @@ target_compile_definitions(
     PRIVATE PGM_VERSION="${PGM_VERSION}"
 )
 
+# Fuzzer coverage instrumentation for the code under test (see
+# cmake/fuzzer_config.cmake). PRIVATE is enough: it only has to affect how the
+# library's own sources are compiled.
+if(PGM_ENABLE_FUZZER AND PGM_FUZZER_SANITIZER_OPTIONS)
+    target_compile_options(
+        power_grid_model_c
+        PRIVATE ${PGM_FUZZER_SANITIZER_OPTIONS}
+    )
+endif()
+
 target_sources(
     power_grid_model_c
     PUBLIC
@@ -43,11 +50,20 @@ target_sources(
             TYPE HEADERS
             BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/include/"
             FILES "${pgm_c_public_headers}"
+    PRIVATE
+        FILE_SET pgm_c_private_headers
+            TYPE HEADERS
+            BASE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/src/"
+            FILES "${pgm_c_private_headers}"
 )
 
 set_target_properties(
     power_grid_model_c
-    PROPERTIES VERSION ${PGM_VERSION} SOVERSION ${PGM_VERSION_MAJOR}
+    PROPERTIES
+        VERSION ${PGM_VERSION}
+        SOVERSION ${PGM_VERSION_MAJOR}
+        VERIFY_INTERFACE_HEADER_SETS TRUE
+        VERIFY_PRIVATE_HEADER_SETS TRUE
 )
 
 if(NOT PGM_MSVC_REPRODUCIBLE_BUILD)

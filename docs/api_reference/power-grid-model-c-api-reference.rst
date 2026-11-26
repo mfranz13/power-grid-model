@@ -87,6 +87,25 @@ The header `power_grid_model_c/model.h` contains functions to create and calcula
 
 
 -----
+Logger
+-----
+
+The header `power_grid_model_c/logger.h` contains functions for creating, registering, and reading loggers.
+
+.. doxygenfile:: power_grid_model_c/logger.h
+
+
+-----
+Validation
+-----
+
+The header `power_grid_model_c/validation.h` contains functions for validating datasets.
+Validation functions and its results are currently experimental. Please set the experimental option flag before use.
+
+.. doxygenfile:: power_grid_model_c/validation.h
+
+
+-----
 Serialization
 -----
 
